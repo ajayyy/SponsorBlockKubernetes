@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: disk-cache-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: disk-cache
+  template:
+    metadata:
+      labels:
+        app: disk-cache
+    spec:
+      containers:
+      - image: ghcr.io/ajayyy/disk-cache:latest
+        name: disk-cache
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: disk-cache-service
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: disk-cache

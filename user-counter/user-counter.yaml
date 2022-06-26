@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: usercount-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: usercount
+  template:
+    metadata:
+      labels:
+        app: usercount
+    spec:
+      containers:
+      - image: ghcr.io/ajayyy/user-counter:latest
+        name: usercount
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
+        - name: DEFAULT_USER_COUNT
+          value: "3081261"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-counter-service
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: user-counter

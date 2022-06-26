@@ -1,0 +1,72 @@
+controller:
+
+  # Ensure this is up to date with IPs
+  service:
+    externalIPs:
+      - 5.161.109.28
+      - 5.161.44.97
+    externalTrafficPolicy: Local
+
+  podLabels:
+    app: nginx-service
+
+  config:
+    disable-access-log: true
+    error-log-level: notice
+    error-log-path: /tmp/nginx/error.log
+    # "$http_referer" "$http_user_agent" 
+    log-format-upstream: '$remote_user [$time_local]
+      "$request" $status $body_bytes_sent
+      "$gzip_ratio"'
+    http-snippet: |
+      proxy_cache_path /tmp/nginx-cache levels=1:2 keys_zone=static-cache:10m inactive=60m max_size=800m;
+      proxy_cache_key "$scheme$request_method$host$request_uri";
+    server-snippet: |
+      error_page 502 503 /502.html;
+      error_page 504 /504.html;
+
+      location = /502.html {
+        ssi on;
+        internal;
+        return 200 'Bad Gateway: Could not connect to backend';
+      }
+
+      location = /504.html {
+        ssi on;
+        internal;
+        return 200 'Gateway Timeout: Could not connect to backend';
+      }
+    location-snippet: |
+      if ($request_method = 'OPTIONS') {
+        add_header 'Access-Control-Allow-Origin' '*';
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, DELETE';
+        add_header 'Access-Control-Allow-Headers' 'Content-Type';
+        # cache CORS for 24 hours
+        add_header 'Access-Control-Max-Age' 86400;
+        # return empty response for preflight
+        add_header 'Content-Type' 'text/plain; charset=UTF-8';
+        add_header 'Content-Length' 0;
+        return 204;
+      }
+  
+
+  # required to have a replica on every node
+  # that it might be scheduled on (label some nodes)
+  # since otherwise packets might drop (local traffic policy)
+  replicaCount: 2
+
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        podAffinityTerm:
+          topologyKey: kubernetes.io/hostname
+          labelSelector:
+            matchLabels:
+              app: nginx-service
+
+  nodeSelector:
+    nginx: "true"
+
+  # Old option
+  # hostNetwork: true

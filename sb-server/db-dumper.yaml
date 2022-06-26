@@ -1,0 +1,76 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-dumper-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-dumper
+  template:
+    metadata:
+      labels:
+        app: db-dumper
+    spec:
+      containers:
+      - image: ghcr.io/ajayyy/rsync-host:latest
+        name: db-dumper
+        envFrom:
+          - configMapRef:
+              name: sb-server-config
+        env:
+          - name: postgres_host
+            valueFrom: { secretKeyRef: { name: pgsb-pguser-sponsorblock, key: host } }
+          - name: postgres_port
+            valueFrom: { secretKeyRef: { name: pgsb-pguser-sponsorblock, key: port } }
+          - name: postgres_user
+            valueFrom: { secretKeyRef: { name: pgsb-pguser-sponsorblock, key: user } }
+          - name: postgres_password
+            valueFrom: { secretKeyRef: { name: pgsb-pguser-sponsorblock, key: password } }
+          - name: dumpDatabase_enabled
+            value: "true"
+          - name: dumpDatabase_appExportPath
+            value: "./database-export"
+        ports:
+        - containerPort: 8080
+          name: web-server
+        - containerPort: 873
+          name: rsync-server
+        volumeMounts:
+          - mountPath: "/etc/rsyncd.conf"
+            subPath: "rsyncd.conf"
+            name: config
+      volumes:
+        - name: config
+          configMap:
+            name: rsync-config
+            items:
+            - key: rsyncd-conf
+              path: rsyncd.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-dumper-service
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: db-dumper
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rsync-service
+spec:
+  type: NodePort
+  ports:
+  - port: 873
+    protocol: TCP
+    targetPort: 873
+    nodePort: 31111
+  selector:
+    app: db-dumper

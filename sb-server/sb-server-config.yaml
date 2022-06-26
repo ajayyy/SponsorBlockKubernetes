@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sb-server-config
+data:
+  postgres_enabled: "true"
+  postgresReadOnly_enabled: "true"
+  postgresReadOnly_host: pgsb-replicas.default.svc
+  redis_enabled: "true"
+  redis_socket_host: redis-service
+  redis_socket_port: "6379"
+  mode: production
+  # mode: development
+  userCounterURL: user-counter-service
+  newLeafURLs: "http://newleaf-service:3000"
+  adminUserID: 7b89ea26f77bda8176e655eee86029f28c1e6514b6d6e3450bce362b5b126ca3
+  diskCacheURL: "http://disk-cache-service:8080"
+  rateLimit_vote_max: "1000000000"

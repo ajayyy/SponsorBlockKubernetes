@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sb-site-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sb-site
+  template:
+    metadata:
+      labels:
+        app: sb-site
+      name: sb-site
+    spec:
+      containers:
+      - image: ghcr.io/ajayyy/sb-site:latest
+        name: sb-site
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sb-site-service
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: sb-site

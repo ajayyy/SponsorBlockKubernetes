@@ -1,0 +1,6 @@
+[submodule "secrets"]
+	path = secrets
+	url = https://github.com/ajayyy/kubernetes-secrets
+[submodule "postgres"]
+	path = postgres
+	url = https://github.com/ajayyy/postgres-operator-config

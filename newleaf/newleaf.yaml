@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: newleaf-deployment
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: newleaf
+  template:
+    metadata:
+      labels:
+        app: newleaf
+      name: newleaf
+    spec:
+      containers:
+      - image: abeltramo/newleaf:latest
+        name: newleaf
+        ports:
+        - containerPort: 3000
+          hostPort: 3000 # forces it to only run once per node
+        volumeMounts:
+          - mountPath: "/workdir/configuration.py"
+            subPath: "configuration.py"
+            name: config
+      volumes:
+        - name: config
+          configMap:
+            name: newleaf-config
+            items:
+            - key: newleaf-config
+              path: configuration.py
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: newleaf-service
+spec:
+  ports:
+  - port: 3000
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: newleaf
