@@ -24,6 +24,13 @@ spec:
                 name: sb-server-service
                 port:
                   number: 8080
+          - path: /api/getVideoSponsorTimes
+            pathType: Prefix
+            backend:
+              service:
+                name: sb-server-read-service
+                port:
+                  number: 8080
           - path: /database
             pathType: Prefix
             backend:
@@ -35,6 +42,49 @@ spec:
     #   http: *backend
     # - host: "api.sponsor.ajay.app"
     #   http: *backend
+---
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sb-site-ingress-skip-segments
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      internal;
+      rewrite ^ $original_uri break;
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location /api/skipSegments {
+        if ( $request_method = GET) {
+          set $target_destination '/_read';
+        }
+        if ( $request_method != GET) {
+          set $target_destination '/_write';
+        }
+        set $original_uri $uri;
+        rewrite ^ $target_destination last;
+      }
+spec:
+  ingressClassName: nginx
+  tls:
+    - secretName: sponsor-cert
+  rules:
+    - host: k8s.sponsor.ajay.app
+      http: &backend
+        paths:
+          - path: /_read
+            pathType: Prefix
+            backend:
+              service:
+                name: sb-server-read-service
+                port:
+                  number: 8080
+          - path: /_write
+            pathType: Prefix
+            backend:
+              service:
+                name: sb-server-service
+                port:
+                  number: 8080
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
