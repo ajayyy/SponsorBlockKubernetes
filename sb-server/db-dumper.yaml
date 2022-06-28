@@ -20,14 +20,10 @@ spec:
           - configMapRef:
               name: sb-server-config
         env:
-          - name: postgres_host
-            valueFrom: { secretKeyRef: { name: pgsb-pguser-sponsorblock, key: host } }
-          - name: postgres_port
-            valueFrom: { secretKeyRef: { name: pgsb-pguser-sponsorblock, key: port } }
           - name: postgres_user
-            valueFrom: { secretKeyRef: { name: pgsb-pguser-sponsorblock, key: user } }
+            valueFrom: { secretKeyRef: { name: cluster1-postgres-secret, key: username } }
           - name: postgres_password
-            valueFrom: { secretKeyRef: { name: pgsb-pguser-sponsorblock, key: password } }
+            valueFrom: { secretKeyRef: { name: cluster1-postgres-secret, key: password } }
           - name: dumpDatabase_enabled
             value: "true"
           - name: dumpDatabase_appExportPath

@@ -1,0 +1,10 @@
+resources:
+- secrets
+- certs
+- ingress/ingress.yaml
+- ingress/sb-virtual-server.yaml
+- redis
+- newleaf
+- disk-cache
+- sb-server
+- site

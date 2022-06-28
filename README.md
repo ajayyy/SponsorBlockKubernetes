@@ -10,6 +10,25 @@ helm upgrade --install ingress-nginx ingress-nginx \
   -f ingress/nginx-ingress-values.yaml
 ```
 
+### Setup postgres
+
+
+```bash
+kubectl apply -f kubernetes-config/postgres/operator.yaml
+
+# Then wait a little bit for it to startup and install the CRDs
+
+kubectl apply -f kubernetes-config/postgres
+```
+
+### Then use kustomize
+
+Untested
+
+```bash
+kubectl apply -k kubernetes-config
+```
+
 # Postgres
 
 ```bash
@@ -64,40 +83,3 @@ cmctl x install --dry-run > cert-manager.custom.yaml
 ```
 
 The cert manager yaml has already been created and is in kubernetes-config/certs
-
-# Outdated things
-
-# Odd things
-
-When initializing a new database, the pg-pool section needs to be commented out first, then it can be upgraded with it included.
-
-\* Seems this was fixed thougn \*
-
-### Getting credentials
-
-```bash
-export POSTGRES_PASSWORD=$(kubectl get secret --namespace default pg-ha-postgresql-ha-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
-
-export REPMGR_PASSWORD=$(kubectl get secret --namespace default pg-ha-postgresql-ha-postgresql -o jsonpath="{.data.repmgr-password}" | base64 --decode)
-
-export ADMIN_PASSWORD=$(kubectl get secret --namespace "default" pg-ha-postgresql-ha-pgpool -o jsonpath="{.data.admin-password}" | base64 --decode)
-```
-
-### Install db
-
-```bash
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm install -f postgres-values.yaml pg-ha bitnami/postgresql-ha
-```
-
-### Upgrading db
-
-```bash
-helm upgrade -f postgres-values.yaml pg-ha bitnami/postgresql-ha --set postgresql.repmgrPassword=$REPMGR_PASSWORD --set pgpool.adminPassword=$ADMIN_PASSWORD --set postgresql.password=$POSTGRES_PASSWORD
-```
-
-To restart db instances, set replicas to 1 and do
-
-```bash
-helm upgrade -f postgres-values.yaml pg-ha bitnami/postgresql-ha --set postgresql.repmgrPassword=$REPMGR_PASSWORD --set pgpool.adminPassword=$ADMIN_PASSWORD --set postgresql.password=$POSTGRES_PASSWORD --set postgresql.upgradeRepmgrExtension=true
-```
