@@ -24,6 +24,10 @@ spec:
             valueFrom: { secretKeyRef: { name: cluster1-postgres-secret, key: username } }
           - name: postgres_password
             valueFrom: { secretKeyRef: { name: cluster1-postgres-secret, key: password } }
+          - name: postgresReadOnly_user
+            valueFrom: { secretKeyRef: { name: cluster1-postgres-secret, key: username } }
+          - name: postgresReadOnly_password
+            valueFrom: { secretKeyRef: { name: cluster1-postgres-secret, key: password } }
           - name: dumpDatabase_enabled
             value: "true"
           - name: dumpDatabase_appExportPath
@@ -44,6 +48,23 @@ spec:
             items:
             - key: rsyncd-conf
               path: rsyncd.conf
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ram
+                operator: NotIn
+                values:
+                - 8gb
+              - key: dbsize
+                operator: NotIn
+                values:
+                - "true"
+              - key: nginx
+                operator: NotIn
+                values:
+                - "true"
 ---
 apiVersion: v1
 kind: Service

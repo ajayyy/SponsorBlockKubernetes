@@ -5,6 +5,6 @@ metadata:
 data:
   redis-config: |
     maxmemory-policy allkeys-lru
-    maxmemory 6000mb
+    maxmemory 5000mb
 
     appendonly no

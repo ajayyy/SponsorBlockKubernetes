@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: sb-server-deployment
 spec:
-  replicas: 18
+  replicas: 15
   selector:
     matchLabels:
       app: sb-server
@@ -17,6 +17,12 @@ spec:
       containers:
       - image: ghcr.io/ajayyy/sb-server:latest
         name: sb-server
+        resources:
+          requests:
+            cpu: 800m
+            memory: 2Gi
+          limits:
+            memory: 2Gi
         envFrom:
           - configMapRef:
               name: sb-server-config
@@ -68,13 +74,17 @@ spec:
                 operator: NotIn
                 values:
                 - "true"
+              - key: nginx
+                operator: NotIn
+                values:
+                - "true"
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sb-server-read-deployment
 spec:
-  replicas: 5
+  replicas: 15
   selector:
     matchLabels:
       app: sb-server
@@ -88,6 +98,12 @@ spec:
       containers:
       - image: ghcr.io/ajayyy/sb-server:latest
         name: sb-server
+        resources:
+          requests:
+            cpu: 800m
+            memory: 1.5Gi
+          limits:
+            memory: 1.5Gi
         envFrom:
           - configMapRef:
               name: sb-server-config
@@ -136,6 +152,10 @@ spec:
                 values:
                 - 8gb
               - key: dbsize
+                operator: NotIn
+                values:
+                - "true"
+              - key: nginx
                 operator: NotIn
                 values:
                 - "true"

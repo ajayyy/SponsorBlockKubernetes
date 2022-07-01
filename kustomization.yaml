@@ -1,10 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
 resources:
 - secrets
 - certs
-- ingress/ingress.yaml
-- ingress/sb-virtual-server.yaml
+- ingress
 - redis
 - newleaf
 - disk-cache
 - sb-server
 - site
+- user-counter

@@ -4,15 +4,16 @@ metadata:
   name: sb-server-config
 data:
   postgres_enabled: "true"
-  postgresReadOnly_enabled: "true"
+  # postgresReadOnly_enabled: "true"
+  # postgres_host: cluster1.default.svc
   postgres_host: cluster1.default.svc
-  postgresReadOnly_host: cluster1-replica.default.svc
+  # postgresReadOnly_host: cluster1-replica.default.svc
   redis_enabled: "true"
   redis_socket_host: redis-service
   redis_socket_port: "6379"
   mode: production
   # mode: development
-  userCounterURL: user-counter-service
+  userCounterURL: "http://user-counter-service:8080"
   newLeafURLs: "http://newleaf-service:3000"
   adminUserID: 7b89ea26f77bda8176e655eee86029f28c1e6514b6d6e3450bce362b5b126ca3
   diskCacheURL: "http://disk-cache-service:8080"

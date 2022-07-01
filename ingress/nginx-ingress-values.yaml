@@ -3,17 +3,20 @@ controller:
   # Ensure this is up to date with IPs
   service:
     externalIPs:
-      - 5.161.109.28
-      - 5.161.44.97
+      - 5.161.68.36
+      - 5.161.120.236
+      - 5.161.121.165
     externalTrafficPolicy: Local
 
   podLabels:
     app: nginx-service
 
+  max-worker-connections: 0
+
   config:
     disable-access-log: true
     error-log-level: notice
-    error-log-path: /tmp/nginx/error.log
+    error-log-path: /dev/null
     # "$http_referer" "$http_user_agent" 
     log-format-upstream: '$remote_user [$time_local]
       "$request" $status $body_bytes_sent
@@ -53,7 +56,7 @@ controller:
   # required to have a replica on every node
   # that it might be scheduled on (label some nodes)
   # since otherwise packets might drop (local traffic policy)
-  replicaCount: 2
+  replicaCount: 3
 
   affinity:
     podAntiAffinity:
@@ -67,6 +70,10 @@ controller:
 
   nodeSelector:
     nginx: "true"
+
+  resources:
+    requests:
+      cpu: 1
 
   # Old option
   # hostNetwork: true

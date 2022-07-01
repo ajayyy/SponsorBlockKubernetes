@@ -1,4 +1,14 @@
+### Create cluster
 
+```bash
+terraform apply -auto-approve
+```
+
+Destroy:
+
+```bash
+terraform destroy -auto-approve
+```
 
 
 ### Install nginx ingress
@@ -7,13 +17,14 @@
 helm upgrade --install ingress-nginx ingress-nginx \
   --repo https://kubernetes.github.io/ingress-nginx \
   --namespace ingress-nginx --create-namespace \
-  -f ingress/nginx-ingress-values.yaml
+  -f kubernetes-config/ingress/nginx-ingress-values.yaml
 ```
 
 ### Setup postgres
 
 
 ```bash
+kubectl apply -f kubernetes-config/secrets/cluster1-backrest-repo-config-secret.yaml
 kubectl apply -f kubernetes-config/postgres/operator.yaml
 
 # Then wait a little bit for it to startup and install the CRDs
@@ -23,7 +34,7 @@ kubectl apply -f kubernetes-config/postgres
 
 ### Then use kustomize
 
-Untested
+Might have to run a second time to make sure cert works (will error if it fails)
 
 ```bash
 kubectl apply -k kubernetes-config
@@ -83,3 +94,18 @@ cmctl x install --dry-run > cert-manager.custom.yaml
 ```
 
 The cert manager yaml has already been created and is in kubernetes-config/certs
+
+
+# Other useful things
+
+### Database
+
+Get password
+
+```bash
+kubectl get secret cluster1-pguser-secret -o go-template='{{.data.password | base64decode}}'
+```
+
+#### Notes
+
+If the main switches to a replica, there might be an issue due to replica service and pgbouncer now pointing to the same pod, removing any load balancing. A solution would be to delete the replica pod to cause it to failover to the main one.

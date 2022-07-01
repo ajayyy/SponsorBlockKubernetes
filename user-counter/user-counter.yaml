@@ -6,11 +6,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: usercount
+      app: user-counter
   template:
     metadata:
       labels:
-        app: usercount
+        app: user-counter
     spec:
       containers:
       - image: ghcr.io/ajayyy/user-counter:latest
@@ -22,6 +22,23 @@ spec:
           value: "8080"
         - name: DEFAULT_USER_COUNT
           value: "3081261"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ram
+                operator: NotIn
+                values:
+                - 8gb
+              - key: dbsize
+                operator: NotIn
+                values:
+                - "true"
+              - key: nginx
+                operator: NotIn
+                values:
+                - "true"
 ---
 apiVersion: v1
 kind: Service

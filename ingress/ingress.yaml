@@ -2,6 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: sb-site-ingress
+  # annotations:
+  # regex makes it stop using other ingresses
+  #   nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   ingressClassName: nginx
   tls:
@@ -33,15 +36,18 @@ spec:
                   number: 8080
           - path: /database
             pathType: Prefix
-            backend:
+            backend: &dbBackend
               service:
                 name: db-dumper-service
                 port:
                   number: 8080
-    # - host: "sponsor.ajay.app"
-    #   http: *backend
-    # - host: "api.sponsor.ajay.app"
-    #   http: *backend
+          - path: /database.json
+            pathType: Prefix
+            backend: *dbBackend
+    - host: "sponsor.ajay.app"
+      http: *backend
+    - host: "api.sponsor.ajay.app"
+      http: *backend
 ---
 ---
 apiVersion: networking.k8s.io/v1
@@ -49,9 +55,17 @@ kind: Ingress
 metadata:
   name: sb-site-ingress-skip-segments
   annotations:
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
+
     nginx.ingress.kubernetes.io/configuration-snippet: |
       internal;
       rewrite ^ $original_uri break;
+
+      # proxy_cache static-cache;
+      # proxy_cache_valid 5m;
+      # proxy_cache_lock on;
+      # proxy_cache_use_stale updating;
+      # add_header X-Cache-Status $upstream_cache_status;
     nginx.ingress.kubernetes.io/server-snippet: |
       location /api/skipSegments {
         if ( $request_method = GET) {
@@ -85,6 +99,10 @@ spec:
                 name: sb-server-service
                 port:
                   number: 8080
+    - host: sponsor.ajay.app
+      http: *backend
+    - host: api.sponsor.ajay.app
+      http: *backend
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -120,7 +138,7 @@ spec:
           - path: /api/getTopCategoryUsers
             pathType: Prefix
             backend: *sb-server
-    # - host: "sponsor.ajay.app"
-    #   http: *backend
-    # - host: "api.sponsor.ajay.app"
-    #   http: *backend
+    - host: "sponsor.ajay.app"
+      http: *backend
+    - host: "api.sponsor.ajay.app"
+      http: *backend

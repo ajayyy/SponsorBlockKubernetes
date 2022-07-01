@@ -25,8 +25,8 @@ metadata:
 spec:
   dnsNames:
     - k8s.sponsor.ajay.app
-    # - sponsor.ajay.app
-    # - api.sponsor.ajay.app
+    - sponsor.ajay.app
+    - api.sponsor.ajay.app
   secretName: sponsor-cert
   issuerRef:
     name: zerossl
