@@ -84,7 +84,7 @@ kind: Deployment
 metadata:
   name: sb-server-read-deployment
 spec:
-  replicas: 15
+  replicas: 20
   selector:
     matchLabels:
       app: sb-server
