@@ -60,13 +60,11 @@ controller:
 
   affinity:
     podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 1
-        podAffinityTerm:
-          topologyKey: kubernetes.io/hostname
-          labelSelector:
-            matchLabels:
-              app: nginx-service
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app: nginx-service
+        topologyKey: kubernetes.io/hostname
 
   nodeSelector:
     nginx: "true"
