@@ -56,15 +56,16 @@ controller:
   # required to have a replica on every node
   # that it might be scheduled on (label some nodes)
   # since otherwise packets might drop (local traffic policy)
-  replicaCount: 3
+  # use double to be safe
+  replicaCount: 6
 
-  affinity:
-    podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchLabels:
-            app: nginx-service
-        topologyKey: kubernetes.io/hostname
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: DoNotSchedule
+      labelSelector:
+        matchLabels:
+          app: nginx-service
 
   nodeSelector:
     nginx: "true"
