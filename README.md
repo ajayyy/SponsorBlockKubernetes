@@ -68,6 +68,25 @@ To check on the status of your installation, you can run the following command:
 kubectl describe postgresclusters.postgres-operator.crunchydata.com pgsb
 ```
 
+Then fix the affinity by running
+
+```bash
+kubectl edit deployments.apps cluster1-repl<number>
+```
+
+And adding the following to `spec.affinity`
+
+```yaml
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: dbsize
+                operator: In
+                values:
+                - "true"
+```
+
 # Install other configs
 
 ```bash
