@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: sb-server-deployment
 spec:
-  replicas: 18
+  replicas: 28
   selector:
     matchLabels:
       app: sb-server
@@ -84,7 +84,7 @@ kind: Deployment
 metadata:
   name: sb-server-read-deployment
 spec:
-  replicas: 20
+  replicas: 12
   selector:
     matchLabels:
       app: sb-server

@@ -162,7 +162,7 @@ spec:
     #    pg-cluster-label: cluster1
   pgReplicas:
     hotStandby: # a generic name, can be more than one
-      size: 2
+      size: 3
       # resources:
       #   requests:
       #     cpu: "500m"
