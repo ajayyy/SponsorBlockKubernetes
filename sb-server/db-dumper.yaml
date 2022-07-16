@@ -21,13 +21,13 @@ spec:
               name: sb-server-config
         env:
           - name: postgres_user
-            valueFrom: { secretKeyRef: { name: cluster1-postgres-secret, key: username } }
+            valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
           - name: postgres_password
-            valueFrom: { secretKeyRef: { name: cluster1-postgres-secret, key: password } }
+            valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
           - name: postgresReadOnly_user
-            valueFrom: { secretKeyRef: { name: cluster1-postgres-secret, key: username } }
+            valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
           - name: postgresReadOnly_password
-            valueFrom: { secretKeyRef: { name: cluster1-postgres-secret, key: password } }
+            valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
           - name: dumpDatabase_enabled
             value: "true"
           - name: dumpDatabase_appExportPath

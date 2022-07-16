@@ -5,8 +5,10 @@ metadata:
 data:
   postgres_enabled: "true"
   postgresReadOnly_enabled: "true"
-  postgres_host: cluster1.default.svc
-  postgresReadOnly_host: cluster1-replica.default.svc
+  postgresReadOnly_weight: "4"
+  # postgres_host: cluster1.default.svc
+  postgres_host: cluster3.default.svc
+  postgresReadOnly_host: cluster3-replica.default.svc
   redis_enabled: "true"
   redis_socket_host: redis-service
   redis_socket_port: "6379"

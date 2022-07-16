@@ -3,12 +3,12 @@ kind: PerconaPGCluster
 metadata:
   labels:
     pgo-version: 1.3.0
-  name: cluster1
+  name: cluster3
 spec:
-#  secretsName: cluster1-users
-#  sslCA: cluster1-ssl-ca
-#  sslSecretName: cluster1-ssl-keypair
-#  sslReplicationSecretName: cluster1-ssl-keypair
+#  secretsName: cluster2-users
+#  sslCA: cluster2-ssl-ca
+#  sslSecretName: cluster2-ssl-keypair
+#  sslReplicationSecretName: cluster2-ssl-keypair
   upgradeOptions:
     versionServiceEndpoint: https://check.percona.com
     apply: 14-recommended
@@ -22,9 +22,9 @@ spec:
   pause: false
   keepData: true
   keepBackups: true
-#  pgDataSource:
-#    restoreFrom: ""
-#    restoreOpts: ""
+  # pgDataSource: # Does not work
+  #   restoreFrom: "cluster1"
+  #   restoreOpts: ""
 #  tablespaceStorages:
 #    lake:
 #      volumeSpec:
@@ -56,7 +56,7 @@ spec:
     affinity:
       antiAffinityType: preferred
       # custom affinity is not allowed at the moment
-      # workaround is to manually add it with kubectl edit deployments.apps cluster1
+      # workaround is to manually add it with kubectl edit deployments.apps cluster2
       # nodeAffinity:
       #   requiredDuringSchedulingIgnoredDuringExecution:
       #     nodeSelectorTerms:
@@ -85,9 +85,9 @@ spec:
       serviceType: ClusterIP
 #      loadBalancerSourceRanges:
 #      annotations:
-#        pg-cluster-annot: cluster1
+#        pg-cluster-annot: cluster2
 #      labels:
-#        pg-cluster-label: cluster1
+#        pg-cluster-label: cluster2
 #    customconfig: ""
   pmm:
     enabled: false
@@ -128,7 +128,7 @@ spec:
         bucket: "sponsorblock-postgres2"
         endpointUrl: "s3.us-west-002.backblazeb2.com"
         region: "us-west-002"
-#    repoPath: ""
+    repoPath: "/backrestrepo/cluster1-backrest-shared-repo"
     schedule:
       - name: "full-backup"
         schedule: "0 1 * * 0"
@@ -136,8 +136,8 @@ spec:
         type: full
         storage: repo1
       - name: "incremental-backup"
-        schedule: "0 1 * * 1-6"
-        keep: 5
+        schedule: "*/10 * * * *"
+        keep: 1024
         type: incr
         storage: repo1
   pgBouncer: # required, or else replicas won't be created
@@ -157,12 +157,12 @@ spec:
       serviceType: ClusterIP
     #  loadBalancerSourceRanges:
     #  annotations:
-    #    pg-cluster-annot: cluster1
+    #    pg-cluster-annot: cluster2
     #  labels:
-    #    pg-cluster-label: cluster1
+    #    pg-cluster-label: cluster2
   pgReplicas:
     hotStandby: # a generic name, can be more than one
-      size: 3
+      size: 2
       # resources:
       #   requests:
       #     cpu: "500m"
@@ -177,17 +177,17 @@ spec:
         storageclass: ""
 #        matchLabels: ""
 #      labels:
-#        pg-cluster-label: cluster1
+#        pg-cluster-label: cluster2
 #      annotations:
-#        pg-cluster-annot: cluster1-1
+#        pg-cluster-annot: cluster2-1
       enableSyncStandby: false
       expose:
         serviceType: ClusterIP
 #        loadBalancerSourceRanges:
 #        annotations:
-#          pg-cluster-annot: cluster1
+#          pg-cluster-annot: cluster2
 #        labels:
-#          pg-cluster-label: cluster1
+#          pg-cluster-label: cluster2
       affinity:
         antiAffinityType: preferred
         # custom affinity is not allowed at the moment

@@ -115,6 +115,22 @@ cmctl x install --dry-run > cert-manager.custom.yaml
 The cert manager yaml has already been created and is in kubernetes-config/certs
 
 
+### Restoring database from backup
+
+See https://www.percona.com/doc/kubernetes-operator-for-postgresql/standby.html
+
+- Make new cluster with standby and old repoPath
+- Copy over the secrets (script there doesn't work, just edit the file manually)
+- Make sure s3 secrets are there for that cluster
+
+Deleting clusters can be done with:
+
+```bash
+kubectl delete perconapgclusters.pg.percona.com clustername
+```
+
+When scaling down, make sure everything is still working before deleting volumes
+
 # Other useful things
 
 ### Database
