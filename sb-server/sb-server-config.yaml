@@ -4,10 +4,10 @@ metadata:
   name: sb-server-config
 data:
   postgres_enabled: "true"
-  # postgresReadOnly_enabled: "true"
-  # postgresReadOnly_weight: "4"
+  postgresReadOnly_enabled: "true"
+  postgresReadOnly_weight: "4"
   postgres_host: cluster3.default.svc
-  # postgresReadOnly_host: cluster3-replica.default.svc
+  postgresReadOnly_host: cluster3-replica.default.svc
   redis_enabled: "true"
   redis_socket_host: redis-service
   redis_socket_port: "6379"
