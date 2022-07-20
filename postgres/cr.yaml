@@ -136,7 +136,7 @@ spec:
         type: full
         storage: repo1
       - name: "incremental-backup"
-        schedule: "*/10 * * * *"
+        schedule: "*/20 * * * *"
         keep: 1024
         type: incr
         storage: repo1
