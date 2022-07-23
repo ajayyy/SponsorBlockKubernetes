@@ -117,7 +117,7 @@ spec:
 #    affinity:
 #      antiAffinityType: preferred
     volumeSpec:
-      size: 200G
+      size: 500G
       accessmode: ReadWriteOnce
       storagetype: dynamic
       storageclass: ""
@@ -189,7 +189,7 @@ spec:
 #        labels:
 #          pg-cluster-label: cluster2
       affinity:
-        antiAffinityType: preferred
+        antiAffinityType: required
         # custom affinity is not allowed at the moment
         # nodeAffinity:
         #     requiredDuringSchedulingIgnoredDuringExecution:
