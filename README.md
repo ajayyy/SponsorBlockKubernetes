@@ -81,7 +81,7 @@ And adding the following to `spec.affinity`
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: dbsize
+              - key: largerdb
                 operator: In
                 values:
                 - "true"
@@ -130,6 +130,43 @@ kubectl delete perconapgclusters.pg.percona.com clustername
 ```
 
 When scaling down, make sure everything is still working before deleting volumes
+
+### Recovering from wal failure causing out of date replicas
+
+Check to see if backrest is out of space. If so, raise it in cr.yml and it will auto resize.
+
+Then, follow the steps below to fix wal being out of date
+
+#### Option 1
+
+start a full backup with the repo (see sample-backup.yaml)
+
+Delete replica pods and pvc and restart them or use `patronictl reinit clusterX` and choose the specific pod.
+
+#### Option 2
+
+Untested
+
+https://dba.stackexchange.com/questions/242722/archive-command-repeatly-failing-for-one-particular-file
+
+
+```bash
+kubectl edit configmap cluster1-pgha-config
+```
+
+Set archive_command = /bin/true
+
+Delete replica pods and pvc and restart them or use `patronictl reinit clusterX` and choose the specific pod.
+
+Restore archive_command to default
+
+```
+source /opt/crunchy/bin/postgres-ha/pgbackrest/pgbackrest-archive-push-local-s3.sh %p
+```
+
+Make sure to trigger a full backup after instead of incremental
+
+then need to start a full backup with the repo (see sample-backup.yaml)
 
 # Other useful things
 
