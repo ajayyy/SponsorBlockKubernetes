@@ -131,7 +131,7 @@ spec:
     repoPath: "/backrestrepo/cluster1-backrest-shared-repo"
     schedule:
       - name: "full-backup"
-        schedule: "0 1 * * 0"
+        schedule: "19 8 * * */3"
         keep: 2
         type: full
         storage: repo1
