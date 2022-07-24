@@ -117,7 +117,7 @@ spec:
 #    affinity:
 #      antiAffinityType: preferred
     volumeSpec:
-      size: 500G
+      size: 1024G
       accessmode: ReadWriteOnce
       storagetype: dynamic
       storageclass: ""
