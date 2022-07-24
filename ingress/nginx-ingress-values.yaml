@@ -57,7 +57,7 @@ controller:
   # that it might be scheduled on (label some nodes)
   # since otherwise packets might drop (local traffic policy)
   # use double to be safe
-  replicaCount: 6
+  replicaCount: 9
 
   topologySpreadConstraints:
     - maxSkew: 1
