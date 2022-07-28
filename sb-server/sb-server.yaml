@@ -15,7 +15,7 @@ spec:
         method: post
     spec:
       containers:
-      - image: ghcr.io/ajayyy/sb-server@sha256:89e3d2e569d9cf9b88871d1ac13486927d1f71534bd0b1eb4e78611c8742604c
+      - image: ghcr.io/ajayyy/sb-server@sha256:8c832865377255f2f07603de4a336e275394d6052d3b868b1fbaba18cdd36359
         name: sb-server
         resources:
           requests:
@@ -96,7 +96,7 @@ spec:
         method: get
     spec:
       containers:
-      - image: ghcr.io/ajayyy/sb-server@sha256:89e3d2e569d9cf9b88871d1ac13486927d1f71534bd0b1eb4e78611c8742604c
+      - image: ghcr.io/ajayyy/sb-server@sha256:8c832865377255f2f07603de4a336e275394d6052d3b868b1fbaba18cdd36359
         name: sb-server
         resources:
           requests:
