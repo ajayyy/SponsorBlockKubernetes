@@ -117,7 +117,7 @@ spec:
 #    affinity:
 #      antiAffinityType: preferred
     volumeSpec:
-      size: 1024G
+      size: 900G
       accessmode: ReadWriteOnce
       storagetype: dynamic
       storageclass: ""
@@ -131,13 +131,13 @@ spec:
     repoPath: "/backrestrepo/cluster1-backrest-shared-repo"
     schedule:
       - name: "full-backup"
-        schedule: "19 8 * * */3"
-        keep: 2
+        schedule: "19 9 * * *"
+        keep: 1
         type: full
         storage: repo1
       - name: "incremental-backup"
-        schedule: "*/20 * * * *"
-        keep: 1024
+        schedule: "*/20 */2 * * *"
+        keep: 10
         type: incr
         storage: repo1
   pgBouncer: # required, or else replicas won't be created

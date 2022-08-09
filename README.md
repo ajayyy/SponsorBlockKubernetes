@@ -137,6 +137,20 @@ Check to see if backrest is out of space. If so, raise it in cr.yml and it will 
 
 Then, follow the steps below to fix wal being out of date
 
+#### If only one is failing
+
+Raise storage size in backup pvc
+
+Kill that one and delete the pvc, then recreate the pvc.
+
+Then wait for the automated full backup to finish or use the method below
+
+Then reinit that node
+
+Then delete the old backups to save space
+
+Then lower the storage claim? Is the only way to lower it making a new cluster based on the old one?
+
 #### Option 1
 
 start a full backup with the repo (see sample-backup.yaml)
