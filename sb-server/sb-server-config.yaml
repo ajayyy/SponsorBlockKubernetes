@@ -4,17 +4,24 @@ metadata:
   name: sb-server-config
 data:
   postgres_enabled: "true"
+  postgres_max: "30"
   postgresReadOnly_enabled: "true"
-  postgresReadOnly_weight: "3"
-  postgres_host: cluster3.default.svc
-  postgresReadOnly_host: cluster3-replica.default.svc
+  # postgresReadOnly_weight: "3"
+  postgresReadOnly_weight: "300"
+  postgresReadOnly_readTimeout: "10000"
+  postgresReadOnly_max: "30"
+  postgres_host: pgbouncer-main-service
+  postgres_port: "6432"
+  postgresReadOnly_host: pgbouncer-repl-service
+  postgresReadOnly_port: "6432"
   redis_enabled: "true"
   redis_socket_host: redis-service
   redis_socket_port: "6379"
   mode: production
   # mode: development
-  userCounterURL: "http://user-counter-service:8080"
+  # userCounterURL: "http://user-counter-service:8080"
   newLeafURLs: "http://newleaf-service:3000"
   adminUserID: 7b89ea26f77bda8176e655eee86029f28c1e6514b6d6e3450bce362b5b126ca3
   diskCacheURL: "http://disk-cache-service:8080"
   rateLimit_vote_max: "1000000000"
+  minReputationToSubmitFiller: "-0.01"

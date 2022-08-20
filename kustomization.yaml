@@ -11,3 +11,4 @@ resources:
 - sb-server
 - site
 - user-counter
+- pgbouncer
