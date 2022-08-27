@@ -87,6 +87,19 @@ And adding the following to `spec.affinity`
                 - "true"
 ```
 
+And adding the following to `spec.affinity.podAntiAffinity` for only the repl ones
+
+```yaml
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: deployment-name
+                  operator: In
+                  values:
+                  - cluster3
+              topologyKey: "kubernetes.io/hostname"
+```
+
 # Install other configs
 
 ```bash
