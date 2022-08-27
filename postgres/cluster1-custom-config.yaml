@@ -18,8 +18,8 @@ data:
             max_sync_workers_per_subscription: 16
             max_logical_replication_workers: 20
             max_worker_processes: 32
-            shared_buffers: 2GB
-            wal_buffers: 16MB
+            shared_buffers: 4GB
+            wal_buffers: 128MB
             max_connections: 5000
             # log_destination: stderr
             # logging_collector: off
