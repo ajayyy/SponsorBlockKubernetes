@@ -48,6 +48,8 @@ controller:
         # return empty response for preflight
         add_header 'Content-Type' 'text/plain; charset=UTF-8';
         add_header 'Content-Length' 0;
+        # allow resource timing API
+        add_header 'Timing-Allow-Origin' '*';
         return 204;
       }
     max-worker-connections: 20000
