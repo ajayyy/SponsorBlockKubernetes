@@ -15,14 +15,14 @@ spec:
         method: post
     spec:
       containers:
-      - image: ghcr.io/ajayyy/sb-server@sha256:46f207a1e373f8314fb3578f8990cf0a6907883ecb758d0fafcc373c327bd820
+      - image: ghcr.io/ajayyy/sb-server@sha256:e6f2d624e9501dd0354d0d4f9f66fce9a97ecfa13464c6f7cf64699323c79baf
         name: sb-server
         resources:
           requests:
             cpu: 800m
-            memory: 2Gi
+            memory: 1.5Gi
           limits:
-            memory: 2Gi
+            memory: 1.5Gi
         envFrom:
           - configMapRef:
               name: sb-server-config
@@ -96,14 +96,14 @@ spec:
         method: get
     spec:
       containers:
-      - image: ghcr.io/ajayyy/sb-server@sha256:46f207a1e373f8314fb3578f8990cf0a6907883ecb758d0fafcc373c327bd820
+      - image: ghcr.io/ajayyy/sb-server@sha256:e6f2d624e9501dd0354d0d4f9f66fce9a97ecfa13464c6f7cf64699323c79baf
         name: sb-server
         resources:
           requests:
             cpu: 800m
-            memory: 1.5Gi
+            memory: 1.0Gi
           limits:
-            memory: 1.5Gi
+            memory: 1.0Gi
         envFrom:
           - configMapRef:
               name: sb-server-config
