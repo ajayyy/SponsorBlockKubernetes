@@ -25,8 +25,8 @@ spec:
         app: redis
     spec:
       containers:
-      - image: redis
-        name: redis:7.0
+      - image: redis:7.0
+        name: redis
         # resources:
         #   requests:
         #     memory: 6Gi
