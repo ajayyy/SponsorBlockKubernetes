@@ -8,3 +8,6 @@ data:
     maxmemory 5000mb
     latency-monitor-threshold 200
     appendonly no
+
+    io-threads 4
+    io-threads-do-reads yes
