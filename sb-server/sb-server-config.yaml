@@ -5,14 +5,14 @@ metadata:
 data:
   postgres_enabled: "true"
   postgres_max: "45"
-  postgres_maxTries: "3"
+  postgres_maxTries: "2"
   postgresReadOnly_enabled: "true"
   postgresReadOnly_weight: "4"
   # postgresReadOnly_weight: "300"
   # postgresReadOnly_readTimeout: "200"
-  postgresReadOnly_readTimeout: "500"
+  postgresReadOnly_readTimeout: "200"
   postgresReadOnly_max: "45"
-  postgresReadOnly_maxTries: "3"
+  postgresReadOnly_maxTries: "2"
   postgres_host: pgbouncer-main-service
   # postgres_host: cluster3.default.svc
   postgres_port: "6432"
@@ -22,7 +22,7 @@ data:
   redis_enabled: "true"
   redis_socket_host: redis-service
   redis_socket_port: "6379"
-  redis_getTimeout: "500" # Default 40
+  redis_getTimeout: "50000" # Default 40
   mode: production
   # mode: development
   # userCounterURL: "http://user-counter-service:8080"

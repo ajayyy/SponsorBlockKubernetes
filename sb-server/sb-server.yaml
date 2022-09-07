@@ -15,7 +15,7 @@ spec:
         method: post
     spec:
       containers:
-      - image: ghcr.io/ajayyy/sb-server@sha256:e6f2d624e9501dd0354d0d4f9f66fce9a97ecfa13464c6f7cf64699323c79baf
+      - image: ghcr.io/ajayyy/sb-server@sha256:6364d199946ab93ed1aabce1c5c09a317eef7cf1445c4c3ae3461066056f017a
         name: sb-server
         resources:
           requests:
@@ -59,6 +59,18 @@ spec:
                 name: sb-server-secrets
                 key: discordFirstTimeSubmissionsWebhookURL
                 optional: false
+          - name: patreon_clientId
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: patreon_clientId
+                optional: false
+          - name: patreon_clientSecret
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: patreon_clientSecret
+                optional: false
         ports:
         - containerPort: 8080
       affinity:
@@ -96,7 +108,7 @@ spec:
         method: get
     spec:
       containers:
-      - image: ghcr.io/ajayyy/sb-server@sha256:e6f2d624e9501dd0354d0d4f9f66fce9a97ecfa13464c6f7cf64699323c79baf
+      - image: ghcr.io/ajayyy/sb-server@sha256:6364d199946ab93ed1aabce1c5c09a317eef7cf1445c4c3ae3461066056f017a
         name: sb-server
         resources:
           requests:
