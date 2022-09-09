@@ -3,11 +3,12 @@ kind: ConfigMap
 metadata:
   name: redis-config
 data:
+    # io-threads 3
+    # io-threads-do-reads yes
   redis-config: |
     maxmemory-policy allkeys-lru
     maxmemory 5000mb
     latency-monitor-threshold 200
-    appendonly no
 
-    io-threads 4
-    io-threads-do-reads yes
+    appendonly no
+    save ""
