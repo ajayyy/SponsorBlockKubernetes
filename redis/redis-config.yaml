@@ -5,10 +5,10 @@ metadata:
 data:
     # io-threads 3
     # io-threads-do-reads yes
+    # latency-monitor-threshold 200
   redis-config: |
     maxmemory-policy allkeys-lru
     maxmemory 5000mb
-    latency-monitor-threshold 200
 
     appendonly no
     save ""
