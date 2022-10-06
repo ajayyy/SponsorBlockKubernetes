@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: sb-server-deployment
 spec:
-  replicas: 28
+  replicas: 30
   selector:
     matchLabels:
       app: sb-server
@@ -15,12 +15,12 @@ spec:
         method: post
     spec:
       containers:
-      - image: ghcr.io/ajayyy/sb-server@sha256:6364d199946ab93ed1aabce1c5c09a317eef7cf1445c4c3ae3461066056f017a
+      - image: ghcr.io/ajayyy/sb-server@sha256:d30cb989bf4190043c219fb05b68a77a9f8dd817b557f54f16f545578c970fa2
         name: sb-server
         resources:
           requests:
             cpu: 800m
-            memory: 1.5Gi
+            memory: 1.5Gi # if stuff is not rescheduling, try lowering this for a bit
           limits:
             memory: 1.5Gi
         envFrom:
@@ -90,6 +90,7 @@ spec:
                 operator: NotIn
                 values:
                 - "true"
+                - "extra-large"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -108,14 +109,14 @@ spec:
         method: get
     spec:
       containers:
-      - image: ghcr.io/ajayyy/sb-server@sha256:6364d199946ab93ed1aabce1c5c09a317eef7cf1445c4c3ae3461066056f017a
+      - image: ghcr.io/ajayyy/sb-server@sha256:d30cb989bf4190043c219fb05b68a77a9f8dd817b557f54f16f545578c970fa2
         name: sb-server
         resources:
           requests:
             cpu: 800m
-            memory: 1.0Gi
+            memory: 1Gi
           limits:
-            memory: 1.0Gi
+            memory: 1Gi
         envFrom:
           - configMapRef:
               name: sb-server-config
@@ -171,6 +172,7 @@ spec:
                 operator: NotIn
                 values:
                 - "true"
+                - "extra-large"
 ---
 apiVersion: v1
 kind: Service

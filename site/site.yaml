@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: sb-site-deployment
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: sb-site
@@ -31,6 +31,11 @@ spec:
                 operator: NotIn
                 values:
                 - "true"
+              - key: nginx
+                operator: NotIn
+                values:
+                - "true"
+                - "extra-large"
 ---
 apiVersion: v1
 kind: Service
