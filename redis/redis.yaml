@@ -1,65 +1,65 @@
+# # ---
+# # apiVersion: v1
+# # kind: PersistentVolumeClaim
+# # metadata:
+# #   name: redis-pv-claim
+# # spec:
+# #   accessModes:
+# #     - ReadWriteOnce
+# #   resources:
+# #     requests:
+# #       storage: 10Gi
+# # ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: redis-deployment
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: redis
+#   template:
+#     metadata:
+#       labels:
+#         app: redis
+#     spec:
+#       containers:
+#       - image: redis:7.0
+#         name: redis
+#         # resources:
+#         #   requests:
+#         #     memory: 6Gi
+#         ports:
+#         - containerPort: 6379
+#         volumeMounts:
+#           # - mountPath: "/data"
+#           #   name: redis-data
+#           - mountPath: "/usr/local/etc/redis"
+#             name: config
+#         args:
+#           - "/usr/local/etc/redis/redis.conf"
+#       volumes:
+#         # - name: redis-data 
+#         #   persistentVolumeClaim:
+#         #     claimName: redis-pv-claim # permission error when this is used
+#         - name: config
+#           configMap:
+#             name: redis-config
+#             items:
+#             - key: redis-config
+#               path: redis.conf
+#       nodeSelector:
+#         ram: "8gb"
 # ---
 # apiVersion: v1
-# kind: PersistentVolumeClaim
+# kind: Service
 # metadata:
-#   name: redis-pv-claim
+#   name: redis-service
 # spec:
-#   accessModes:
-#     - ReadWriteOnce
-#   resources:
-#     requests:
-#       storage: 10Gi
-# ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: redis-deployment
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: redis
-  template:
-    metadata:
-      labels:
-        app: redis
-    spec:
-      containers:
-      - image: redis:7.0
-        name: redis
-        # resources:
-        #   requests:
-        #     memory: 6Gi
-        ports:
-        - containerPort: 6379
-        volumeMounts:
-          # - mountPath: "/data"
-          #   name: redis-data
-          - mountPath: "/usr/local/etc/redis"
-            name: config
-        args:
-          - "/usr/local/etc/redis/redis.conf"
-      volumes:
-        # - name: redis-data 
-        #   persistentVolumeClaim:
-        #     claimName: redis-pv-claim # permission error when this is used
-        - name: config
-          configMap:
-            name: redis-config
-            items:
-            - key: redis-config
-              path: redis.conf
-      nodeSelector:
-        ram: "8gb"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: redis-service
-spec:
-  ports:
-  - port: 6379
-    protocol: TCP
-    targetPort: 6379
-  selector:
-    app: redis
+#   ports:
+#   - port: 6379
+#     protocol: TCP
+#     targetPort: 6379
+#   selector:
+#     app: redis

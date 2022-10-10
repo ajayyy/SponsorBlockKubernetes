@@ -1,14 +1,14 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: redis-config
-data:
-    # io-threads 3
-    # io-threads-do-reads yes
-    # latency-monitor-threshold 200
-  redis-config: |
-    maxmemory-policy allkeys-lru
-    maxmemory 5000mb
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: redis-config
+# data:
+#     # io-threads 3
+#     # io-threads-do-reads yes
+#     # latency-monitor-threshold 200
+#   redis-config: |
+#     maxmemory-policy allkeys-lru
+#     maxmemory 4500mb
 
-    appendonly no
-    save ""
+#     appendonly no
+#     save ""

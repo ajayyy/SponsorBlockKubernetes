@@ -9,10 +9,13 @@ data:
   postgresReadOnly_enabled: "true"
   postgresReadOnly_weight: "4"
   # postgresReadOnly_weight: "300"
+  # postgresReadOnly_weight: "0"
   # postgresReadOnly_readTimeout: "200"
-  postgresReadOnly_readTimeout: "200"
+  postgresReadOnly_readTimeout: "2000"
   postgresReadOnly_max: "45"
   postgresReadOnly_maxTries: "2"
+  postgresReadOnly_fallbackOnFail: "true"
+  # postgresReadOnly_maxConcurrentRequests: "30"
   postgres_host: pgbouncer-main-service
   # postgres_host: cluster3.default.svc
   postgres_port: "6432"
@@ -20,9 +23,13 @@ data:
   # postgresReadOnly_host: cluster3-replica.default.svc
   postgresReadOnly_port: "6432"
   redis_enabled: "true"
-  redis_socket_host: redis-service
+  # redis_socket_host: redis-service
+  redis_socket_host: redis-cluster-master
   redis_socket_port: "6379"
-  redis_getTimeout: "50000" # Default 40
+  redis_getTimeout: "50000" # Default 40\
+  redisRead_enabled: "true"
+  redisRead_socket_host: redis-cluster-replicas
+  redisRead_socket_port: "6379"
   mode: production
   # mode: development
   # userCounterURL: "http://user-counter-service:8080"
@@ -31,3 +38,4 @@ data:
   diskCacheURL: "http://disk-cache-service:8080"
   rateLimit_vote_max: "1000000000"
   minReputationToSubmitFiller: "-0.01"
+  dumpDatabase_minTimeBetweenMs: "3600000"

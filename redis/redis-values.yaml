@@ -1,0 +1,33 @@
+master:
+  configuration: |
+    maxmemory-policy allkeys-lru
+    maxmemory 3500mb
+
+    appendonly no
+    save 60 100
+    client-output-buffer-limit slave 80000000000 70000000000 60
+  nodeSelector:
+    ram: "8gb"
+  resources:
+    requests:
+      memory: 7Gi
+  persistence:
+    size: 20Gi
+
+replica:
+  replicaCount: 1
+  configuration: |
+    maxmemory-policy allkeys-lru
+    maxmemory 3500mb
+
+    appendonly no
+  nodeSelector:
+    ram: "8gb"
+  resources:
+    requests:
+      memory: 7Gi
+  persistence:
+    size: 10Gi
+
+auth:
+  enabled: false
