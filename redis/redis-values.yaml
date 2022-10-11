@@ -13,6 +13,8 @@ master:
       memory: 7Gi
   persistence:
     size: 20Gi
+  livenessProbe:
+    failureThreshold: 24
 
 replica:
   replicaCount: 1
@@ -28,6 +30,12 @@ replica:
       memory: 7Gi
   persistence:
     size: 10Gi
+  livenessProbe:
+    enabled: false
 
 auth:
   enabled: false
+
+pdb:
+  create: true
+  minAvailable: 1
