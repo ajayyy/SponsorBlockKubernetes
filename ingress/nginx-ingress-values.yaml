@@ -30,9 +30,12 @@ controller:
     http-snippet: |
       proxy_cache_path /tmp/nginx-cache levels=1:2 keys_zone=static-cache:10m inactive=60m max_size=35g;
       proxy_cache_key "$scheme$request_method$host$request_uri";
+
+      limit_req_zone global zone=segmentLimit:20m rate=3000r/s;
     server-snippet: |
       error_page 502 503 /502.html;
       error_page 504 /504.html;
+      error_page 429 /429.html;
 
       location = /502.html {
         ssi on;
@@ -44,6 +47,12 @@ controller:
         ssi on;
         internal;
         return 200 'Gateway Timeout: Could not connect to backend';
+      }
+
+      location = /409.html {
+        ssi on;
+        internal;
+        return 409 'Ratelimiting';
       }
     location-snippet: |
       if ($request_method = 'OPTIONS') {
@@ -65,6 +74,7 @@ controller:
     enable-real-ip: "true"
     proxy-real-ip-cidr: "173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/12,172.64.0.0/13,131.0.72.0/22,2400:cb00::/32,2606:4700::/32,2803:f800::/32,2405:b500::/32,2405:8100::/32,2a06:98c0::/29,2c0f:f248::/32"
     use-forwarded-headers: "true"
+    limit-req-status-code: 429
     # upstream-keepalive-connections: 30000
   
 
@@ -116,7 +126,7 @@ controller:
   
   sysctls:
     "net.ipv4.ip_local_port_range": "1024 60999"
-    # "net.core.somaxconn": "65535"
+    # "net.core.somaxconn": "65535" # todo: this can be added now that we know how, recreate nodes or edit /etc/rancher/k3s/config.yaml 
 
   # initContainers:
   # - command:
