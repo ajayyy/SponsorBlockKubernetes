@@ -18,6 +18,11 @@ spec:
         name: sb-site
         ports:
         - containerPort: 80
+        resources:
+          requests:
+            memory: 20Mi
+          limits:
+            memory: 20Mi
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

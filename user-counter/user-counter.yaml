@@ -22,6 +22,11 @@ spec:
           value: "8080"
         - name: DEFAULT_USER_COUNT
           value: "3081261"
+        resources:
+          requests:
+            memory: 150Mi
+          limits:
+            memory: 150Mi
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

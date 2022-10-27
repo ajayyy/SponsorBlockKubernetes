@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: newleaf-deployment
 spec:
-  replicas: 6
+  replicas: 3
   selector:
     matchLabels:
       app: newleaf
@@ -16,6 +16,11 @@ spec:
       containers:
       - image: abeltramo/newleaf:latest
         name: newleaf
+        resources:
+          requests:
+            memory: 150Mi
+          limits:
+            memory: 150Mi
         ports:
         - containerPort: 3000
           hostPort: 3000 # forces it to only run once per node
