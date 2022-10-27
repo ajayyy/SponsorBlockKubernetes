@@ -1,0 +1,154 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-sb-server-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-sb-server
+  template:
+    metadata:
+      labels:
+        app: test-sb-server
+    spec:
+      containers:
+      - image: ghcr.io/ajayyy/sb-server@sha256:c9c5bd230de8039d7f09b501ea3e600e711a590a1e39936fde09f765b7462a32
+        name: sb-server
+        # resources:
+        #   requests:
+        #     cpu: 1100m
+        #     memory: 1500Mi
+        #   limits:
+        #     memory: 1500Mi
+        envFrom:
+          - configMapRef:
+              name: test-sb-server-config
+        env:
+          - name: postgres_user
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
+          - name: postgres_password
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
+          - name: postgresReadOnly_user
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
+          - name: postgresReadOnly_password
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
+          # - name: postgres_user
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+          # - name: postgres_password
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+          # - name: postgresReadOnly_user
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+          # - name: postgresReadOnly_password
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+          - name: globalSalt
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: globalSalt
+                optional: false
+          - name: discordReportChannelWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordReportChannelWebhookURL
+                optional: false
+          - name: discordFailedReportChannelWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordFailedReportChannelWebhookURL
+                optional: false
+          - name: discordFirstTimeSubmissionsWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordFirstTimeSubmissionsWebhookURL
+                optional: false
+          - name: patreon_clientId
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: patreon_clientId
+                optional: false
+          - name: patreon_clientSecret
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: patreon_clientSecret
+                optional: false
+        ports:
+        - containerPort: 8080
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ram
+                operator: NotIn
+                values:
+                - 8gb
+              - key: dbsize
+                operator: NotIn
+                values:
+                - "true"
+              - key: nginx
+                operator: NotIn
+                values:
+                - "true"
+                - "extra-large"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-sb-server-service
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: test-sb-server
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-sb-server-config
+data:
+  postgres_enabled: "true"
+  postgres_max: "45"
+  postgres_maxTries: "2"
+  postgresReadOnly_enabled: "true"
+  postgresReadOnly_weight: "4"
+  # postgresReadOnly_weight: "300"
+  # postgresReadOnly_weight: "0"
+  # postgresReadOnly_readTimeout: "200"
+  postgresReadOnly_readTimeout: "2000"
+  postgresReadOnly_max: "45"
+  postgresReadOnly_maxTries: "2"
+  postgresReadOnly_fallbackOnFail: "true"
+  # postgresReadOnly_maxConcurrentRequests: "30"
+  postgres_host: sb-db.second-db
+  # postgres_host: cluster3.default.svc
+  postgres_port: "5432"
+  # postgresReadOnly_host: sb-db.main-db
+  postgresReadOnly_host: sb-db.second-db
+  # postgresReadOnly_host: cluster3-replica.default.svc
+  postgresReadOnly_port: "5432"
+  redis_enabled: "true"
+  redis_socket_host: keydb-service
+  # redis_socket_host: redis-cluster-master
+  redis_socket_port: "6379"
+  redis_getTimeout: "50000" # Default 40\
+  redisRead_enabled: "false"
+  # redisRead_socket_host: redis-cluster-replicas
+  redisRead_socket_port: "6379"
+  mode: development
+  # mode: development
+  # userCounterURL: "http://user-counter-service:8080"
+  newLeafURLs: "http://newleaf-service:3000"
+  adminUserID: 7b89ea26f77bda8176e655eee86029f28c1e6514b6d6e3450bce362b5b126ca3
+  diskCacheURL: "http://disk-cache-service:8080"
+  rateLimit_vote_max: "1000000000"
+  minReputationToSubmitFiller: "-0.01"
+  dumpDatabase_minTimeBetweenMs: "3600000"

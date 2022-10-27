@@ -7,7 +7,7 @@ data:
   PGBOUNCER_POOL_MODE: transaction
   # PGBOUNCER_QUERY_WAIT_TIMEOUT: 120
   PGBOUNCER_MAX_CLIENT_CONN: "5000"
-  PGBOUNCER_DEFAULT_POOL_SIZE: "100" # todo: increase?
+  PGBOUNCER_DEFAULT_POOL_SIZE: "25"
   # PGBOUNCER_SERVER_IDLE_TIMEOUT: 600
   PGBOUNCER_AUTH_USER: postgres # See https://www.enterprisedb.com/postgres-tutorials/pgbouncer-authquery-and-authuser-pro-tips
   PGBOUNCER_AUTH_QUERY: SELECT usename, passwd FROM pg_shadow WHERE usename=$1

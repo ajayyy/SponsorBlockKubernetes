@@ -1,0 +1,27 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: sb-db-replicas-pdb
+  namespace: second-db
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: StackGresCluster
+      cluster-name: sb-db
+      cluster: "true"
+      role: replica
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: sb-db-primary-pdb
+  namespace: second-db
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: StackGresCluster
+      cluster-name: sb-db
+      cluster: "true"
+      role: master

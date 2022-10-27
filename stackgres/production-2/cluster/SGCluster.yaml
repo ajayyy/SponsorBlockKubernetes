@@ -1,0 +1,43 @@
+apiVersion: stackgres.io/v1
+kind: SGCluster
+metadata:
+  name: sb-db
+  namespace: second-db
+spec:
+  postgres:
+    version: '14.5'
+    extensions:
+    - name: 'pgcrypto'
+    - name: 'pg_trgm'
+  instances: 3
+  sgInstanceProfile: 'size-m'
+  pods:
+    persistentVolume:
+      size: '200Gi'
+    scheduling:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: newdb
+              operator: In
+              values:
+              - "true"
+  configurations:
+    sgPostgresConfig: 'pgconfig'
+    sgPoolingConfig: 'poolconfig'
+    backups:
+    - sgObjectStorage: 'backupconfig'
+      cronSchedule: '19 9 * * *'
+      retention: 4
+  distributedLogs:
+    sgDistributedLogs: 'distributedlogs'
+  postgresServices:
+    primary:
+      type: ClusterIP
+    replicas:
+      type: ClusterIP
+  prometheusAutobind: true
+  nonProductionOptions:
+    disableClusterResourceRequirements: true
+    disablePatroniResourceRequirements: true

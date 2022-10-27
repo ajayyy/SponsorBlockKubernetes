@@ -13,7 +13,7 @@ data:
             # listen_addresses: "*"
             max_wal_size: 10GB
             effective_cache_size: 6GB
-            effective_io_concurrency: 2
+            effective_io_concurrency: 30
             max_wal_senders: 16
             max_sync_workers_per_subscription: 16
             max_logical_replication_workers: 20
@@ -23,3 +23,5 @@ data:
             max_connections: 5000
             # log_destination: stderr
             # logging_collector: off
+
+            max_replication_slots: 30

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: sb-server-deployment
 spec:
-  replicas: 35
+  replicas: 32
   selector:
     matchLabels:
       app: sb-server
@@ -15,26 +15,34 @@ spec:
         method: post
     spec:
       containers:
-      - image: ghcr.io/ajayyy/sb-server@sha256:40d2cfac834c5b0d7acdad67235c8edaa6aeaf72d1e161f67b4af4072a347037
+      - image: ghcr.io/ajayyy/sb-server@sha256:2d45066db86f219dd09f92d089159c38c794c4352f5d8f3bd34478ef42a6d09e
         name: sb-server
         resources:
           requests:
-            cpu: 800m
-            memory: 1.5Gi # if stuff is not rescheduling, try lowering this for a bit
+            cpu: 1100m
+            memory: 1500Mi # if stuff is not rescheduling, try lowering this for a bit
           limits:
-            memory: 1.5Gi
+            memory: 1500Mi
         envFrom:
           - configMapRef:
               name: sb-server-config
         env:
           - name: postgres_user
-            valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
           - name: postgres_password
-            valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
           - name: postgresReadOnly_user
-            valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
           - name: postgresReadOnly_password
-            valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
+          # - name: postgres_user
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+          # - name: postgres_password
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+          # - name: postgresReadOnly_user
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+          # - name: postgresReadOnly_password
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
           - name: globalSalt
             valueFrom:
               secretKeyRef:
@@ -97,7 +105,7 @@ kind: Deployment
 metadata:
   name: sb-server-read-deployment
 spec:
-  replicas: 12
+  replicas: 0
   selector:
     matchLabels:
       app: sb-server
@@ -109,26 +117,34 @@ spec:
         method: get
     spec:
       containers:
-      - image: ghcr.io/ajayyy/sb-server@sha256:40d2cfac834c5b0d7acdad67235c8edaa6aeaf72d1e161f67b4af4072a347037
+      - image: ghcr.io/ajayyy/sb-server@sha256:2d45066db86f219dd09f92d089159c38c794c4352f5d8f3bd34478ef42a6d09e
         name: sb-server
         resources:
           requests:
-            cpu: 800m
-            memory: 1Gi
+            cpu: 1100m
+            memory: 900Mi
           limits:
-            memory: 1Gi
+            memory: 900Mi
         envFrom:
           - configMapRef:
               name: sb-server-config
         env:
           - name: postgres_user
-            valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
           - name: postgres_password
-            valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
           - name: postgresReadOnly_user
-            valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
           - name: postgresReadOnly_password
-            valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
+          # - name: postgres_user
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+          # - name: postgres_password
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+          # - name: postgresReadOnly_user
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+          # - name: postgresReadOnly_password
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
           - name: globalSalt
             valueFrom:
               secretKeyRef:
@@ -198,3 +214,4 @@ spec:
     targetPort: 8080
   selector:
     app: sb-server
+    # method: post #testing

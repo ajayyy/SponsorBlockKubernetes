@@ -7,7 +7,7 @@ data:
   postgres_max: "45"
   postgres_maxTries: "2"
   postgresReadOnly_enabled: "true"
-  postgresReadOnly_weight: "4"
+  postgresReadOnly_weight: "2"
   # postgresReadOnly_weight: "300"
   # postgresReadOnly_weight: "0"
   # postgresReadOnly_readTimeout: "200"
@@ -16,19 +16,25 @@ data:
   postgresReadOnly_maxTries: "2"
   postgresReadOnly_fallbackOnFail: "true"
   # postgresReadOnly_maxConcurrentRequests: "30"
-  postgres_host: pgbouncer-main-service
-  # postgres_host: cluster3.default.svc
-  postgres_port: "6432"
-  postgresReadOnly_host: pgbouncer-repl-service
+  postgres_host: sb-db.second-db
+  # postgres_host: pgbouncer-main-service
+  # postgres_host: gb
+  # postgres_port: "6432"
+  postgres_port: "5432"
+  postgresReadOnly_host: sb-db-replicas.second-db
+  # postgresReadOnly_host: pgbouncer-repl-service
   # postgresReadOnly_host: cluster3-replica.default.svc
-  postgresReadOnly_port: "6432"
+  # postgresReadOnly_port: "6432"
+  postgresReadOnly_port: "5432"
+  # postgresReadOnly_stopRetryThreshold: "800"
   redis_enabled: "true"
-  # redis_socket_host: redis-service
-  redis_socket_host: redis-cluster-master
+  redis_socket_host: keydb-service
+  # redis_socket_host: redis-cluster-master
   redis_socket_port: "6379"
-  redis_getTimeout: "50000" # Default 40\
-  redisRead_enabled: "true"
-  redisRead_socket_host: redis-cluster-replicas
+  # redis_getTimeout: "400" # Default 40\
+  redis_getTimeout: "20000" # Default 40\
+  redisRead_enabled: "false"
+  redisRead_socket_host: redis-service
   redisRead_socket_port: "6379"
   mode: production
   # mode: development

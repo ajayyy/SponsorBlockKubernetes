@@ -1,0 +1,19 @@
+apiVersion: stackgres.io/v1beta1
+kind: SGObjectStorage
+metadata:
+  name: backupconfig
+  namespace: second-db
+spec:
+  type: s3Compatible
+  s3Compatible:
+    bucket: sponsorblock-stackgres
+    region: us-west-002
+    endpoint: https://s3.us-west-002.backblazeb2.com 
+    awsCredentials:
+      secretKeySelectors:
+        accessKeyId:
+          key: keyID
+          name: stackgres-backup-credentials
+        secretAccessKey:
+          key: applicationKey
+          name: stackgres-backup-credentials

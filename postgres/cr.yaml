@@ -11,7 +11,8 @@ spec:
 #  sslReplicationSecretName: cluster2-ssl-keypair
   upgradeOptions:
     versionServiceEndpoint: https://check.percona.com
-    apply: 14-recommended
+    # apply: 14-recommended
+    apply: never
     schedule: "0 4 * * *"
   database: pgdb
   port: "5432"

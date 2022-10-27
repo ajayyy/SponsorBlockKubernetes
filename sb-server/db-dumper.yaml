@@ -21,13 +21,13 @@ spec:
               name: sb-server-config
         env:
           - name: postgres_user
-            valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
           - name: postgres_password
-            valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
           - name: postgresReadOnly_user
-            valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
           - name: postgresReadOnly_password
-            valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
           - name: dumpDatabase_enabled
             value: "true"
           - name: dumpDatabase_appExportPath
@@ -41,6 +41,11 @@ spec:
           - mountPath: "/etc/rsyncd.conf"
             subPath: "rsyncd.conf"
             name: config
+        resources:
+          requests:
+            memory: 700Mi
+          limits:
+            memory: 700Mi
       volumes:
         - name: config
           configMap:
