@@ -1,0 +1,70 @@
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: redis-pv-claim
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 10Gi
+# ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keydb-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keydb
+  template:
+    metadata:
+      labels:
+        app: keydb
+    spec:
+      containers:
+      - image: eqalpha/keydb:x86_64_v6.3.1
+        name: keydb
+        # resources:
+        #   requests:
+        #     memory: 6Gi
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+          # - mountPath: "/data"
+          #   name: redis-data
+          - mountPath: "/usr/local/etc/keydb"
+            name: config
+        args:
+          - "/usr/local/etc/keydb/keydb.conf"
+      volumes:
+        # - name: redis-data 
+        #   persistentVolumeClaim:
+        #     claimName: redis-pv-claim # permission error when this is used
+        - name: config
+          configMap:
+            name: keydb-config
+            items:
+            - key: keydb-config
+              path: keydb.conf
+      nodeSelector:
+        ram: "8gb"
+        sysctltest: "true"
+      securityContext:
+        sysctls:
+        - name: net.core.somaxconn
+          value: "65535"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keydb-service
+spec:
+  ports:
+  - port: 6379
+    protocol: TCP
+    targetPort: 6379
+  selector:
+    app: keydb

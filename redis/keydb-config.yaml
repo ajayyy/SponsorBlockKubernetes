@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: redis-config
+  name: keydb-config
 data:
-    # io-threads 3
-    # io-threads-do-reads yes
     # latency-monitor-threshold 200
-  redis-config: |
+  keydb-config: |
     maxmemory-policy allkeys-lru
     maxmemory 4500mb
 
     appendonly no
     save ""
+
+    server-threads 4

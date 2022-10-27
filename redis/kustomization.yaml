@@ -4,3 +4,5 @@ kind: Kustomization
 resources:
 - redis-config.yaml
 - redis.yaml
+- keydb-config.yaml
+- keydb.yaml
