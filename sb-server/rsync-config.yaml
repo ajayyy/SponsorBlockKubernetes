@@ -11,7 +11,7 @@ data:
 
     [sponsorblock]
     use chroot = no
-    max connections = 10
+    max connections = 50
     # path to mirrored files
     path = /usr/src/app/database-export
     comment = sponsorblock-database
