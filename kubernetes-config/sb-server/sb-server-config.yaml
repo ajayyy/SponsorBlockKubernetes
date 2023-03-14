@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sb-server-config
+data:
+  postgres_enabled: "true"
+  # postgres_max: "45"
+  postgres_max: "10"
+  postgres_maxTries: "2"
+  postgresReadOnly_enabled: "false"
+  postgresReadOnly_weight: "2"
+  # postgresReadOnly_weight: "300"
+  # postgresReadOnly_weight: "0"
+  # postgresReadOnly_readTimeout: "200"
+  # postgresReadOnly_readTimeout: "2000"
+  postgresReadOnly_readTimeout: "200000"
+  postgresReadOnly_max: "45"
+  postgresReadOnly_maxTries: "2"
+  postgresReadOnly_fallbackOnFail: "true"
+  # postgresReadOnly_maxConcurrentRequests: "30"
+  postgres_host: "10.2.0.1"
+  # postgres_host: "5.161.49.113"
+  # postgres_host: pgbouncer-main-service
+  # postgres_host: gb
+  # postgres_port: "6432"
+  postgres_port: "5432"
+  postgres_maxActiveRequests: "2000"
+  postgresReadOnly_host: sb-db-replicas.second-db
+  # postgresReadOnly_host: pgbouncer-repl-service
+  # postgresReadOnly_host: cluster3-replica.default.svc
+  # postgresReadOnly_port: "6432"
+  postgresReadOnly_port: "5432"
+  # postgresReadOnly_stopRetryThreshold: "800"
+  redis_enabled: "true"
+  redis_socket_host: "10.3.0.1"
+  # redis_socket_host: "5.161.115.40"
+  # redis_socket_host: keydb-service
+  # redis_socket_host: redis-cluster-master
+  # redis_socket_port: "6379"
+  redis_socket_port: "32773"
+  # redis_maxConnections: "3000"
+  redis_maxConnections: "1000"
+  redis_maxWriteConnections: "500"
+  # redis_disableHashCache: "true"
+  redis_stopWritingAfterResponseTime: "200"
+  redis_commandsQueueMaxLength: "30000000000"
+  # redis_maxConnections: "30000000"
+  # redis_getTimeout: "400" # Default 40\
+  redis_getTimeout: "20000" # Default 40\
+  redisRateLimit: "false"
+  redisRead_enabled: "false"
+  redisRead_socket_host: redis-service
+  redisRead_socket_port: "6379"
+  mode: production
+  # mode: development
+  userCounterURL: "http://user-counter-service:8080"
+  newLeafURLs: "http://newleaf-service:3000"
+  adminUserID: 7b89ea26f77bda8176e655eee86029f28c1e6514b6d6e3450bce362b5b126ca3
+  diskCacheURL: "http://disk-cache-service:8080"
+  rateLimit_vote_max: "1000000000"
+  minReputationToSubmitFiller: "-0.01"
+  minReputationToSubmitChapter: "-0.01"
+  dumpDatabase_minTimeBetweenMs: "3600000"

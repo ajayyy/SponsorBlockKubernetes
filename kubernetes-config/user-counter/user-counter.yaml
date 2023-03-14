@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: usercount-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-counter
+  template:
+    metadata:
+      labels:
+        app: user-counter
+    spec:
+      containers:
+      - image: ghcr.io/ajayyy/user-counter:latest
+        name: usercount
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
+        - name: DEFAULT_USER_COUNT
+          value: "13033165"
+        resources:
+          requests:
+            memory: 1500Mi
+          limits:
+            memory: 1500Mi
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ram
+                operator: NotIn
+                values:
+                - 8gb
+              - key: dbsize
+                operator: NotIn
+                values:
+                - "true"
+              - key: nginx
+                operator: NotIn
+                values:
+                - "true"
+                - "extra-large"
+      securityContext:
+        sysctls:
+        - name: net.core.somaxconn
+          value: "65535"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-counter-service
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: user-counter

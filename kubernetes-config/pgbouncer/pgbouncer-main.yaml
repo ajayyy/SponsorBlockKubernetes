@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgbouncer-main-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      type: main
+      app: pgbouncer
+  template:
+    metadata:
+      labels:
+        type: main
+        app: pgbouncer
+    spec:
+      containers:
+      - image: bitnami/pgbouncer
+        name: pgbouncer
+        ports:
+        - containerPort: 6432
+        envFrom:
+          - configMapRef:
+              name: pgbouncer-config
+        env:
+          - name: POSTGRESQL_HOST
+            value: 10.0.0.2
+          - name: POSTGRESQL_PASSWORD
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: pgbouncer
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: dbsize
+      #           operator: In
+      #           values:
+      #           - "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgbouncer-main-service
+spec:
+  ports:
+  - port: 6432
+    protocol: TCP
+    targetPort: 6432
+  selector:
+    type: main
+    app: pgbouncer

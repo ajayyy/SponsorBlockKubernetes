@@ -1,0 +1,9 @@
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: sysctl-policy
+spec:
+  #todo: wrong since it needs to be enabled in the node first
+  allowedUnsafeSysctls:
+  - kernel.msgmax
+  - net.core.somaxconn

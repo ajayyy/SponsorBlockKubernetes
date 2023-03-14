@@ -1,0 +1,222 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sb-server-deployment
+spec:
+  replicas: 15 #21
+  selector:
+    matchLabels:
+      app: sb-server
+      method: post
+  template:
+    metadata:
+      labels:
+        app: sb-server
+        method: post
+    spec:
+      containers:
+      - image: ghcr.io/ajayyy/sb-server@sha256:e278d14fa9cc8f37602dacc392f61d841fbdec8164e7b29af3fe3973e8f90188
+        name: sb-server
+        resources:
+          requests:
+            # cpu: 1300m # Old limit to not make it overload memory
+            cpu: 900m
+            memory: 1500Mi
+          limits:
+            memory: 1500Mi
+        envFrom:
+          - configMapRef:
+              name: sb-server-config
+        env:
+          - name: postgres_user
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
+          - name: postgres_password
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
+          - name: postgresReadOnly_user
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
+          - name: postgresReadOnly_password
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
+          # - name: postgres_user
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+          # - name: postgres_password
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+          # - name: postgresReadOnly_user
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+          # - name: postgresReadOnly_password
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+          - name: globalSalt
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: globalSalt
+                optional: false
+          - name: discordReportChannelWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordReportChannelWebhookURL
+                optional: false
+          - name: discordFailedReportChannelWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordFailedReportChannelWebhookURL
+                optional: false
+          - name: discordFirstTimeSubmissionsWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordFirstTimeSubmissionsWebhookURL
+                optional: false
+          - name: patreon_clientId
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: patreon_clientId
+                optional: false
+          - name: patreon_clientSecret
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: patreon_clientSecret
+                optional: false
+        ports:
+        - containerPort: 8080
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ram
+                operator: NotIn
+                values:
+                - 8gb
+              - key: dbsize
+                operator: NotIn
+                values:
+                - "true"
+              - key: nginx
+                operator: NotIn
+                values:
+                - "true"
+                - "extra-large"
+      securityContext:
+        sysctls:
+        - name: net.core.somaxconn
+          value: "65535"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sb-server-read-deployment
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: sb-server
+      method: get
+  template:
+    metadata:
+      labels:
+        app: sb-server
+        method: get
+    spec:
+      containers:
+      - image: ghcr.io/ajayyy/sb-server@sha256:e64bddd3ec88e6fedd2ec45897b24a89f3bda653c6512ed5c185d890a70d9332
+        name: sb-server
+        resources:
+          requests:
+            cpu: 1100m
+            memory: 900Mi
+          limits:
+            memory: 900Mi
+        envFrom:
+          - configMapRef:
+              name: sb-server-config
+        env:
+          - name: postgres_user
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
+          - name: postgres_password
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
+          - name: postgresReadOnly_user
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
+          - name: postgresReadOnly_password
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
+          # - name: postgres_user
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+          # - name: postgres_password
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+          # - name: postgresReadOnly_user
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+          # - name: postgresReadOnly_password
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+          - name: globalSalt
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: globalSalt
+                optional: false
+          - name: discordReportChannelWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordReportChannelWebhookURL
+                optional: false
+          - name: discordFailedReportChannelWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordFailedReportChannelWebhookURL
+                optional: false
+          - name: discordFirstTimeSubmissionsWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordFirstTimeSubmissionsWebhookURL
+                optional: false
+        ports:
+        - containerPort: 8080
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ram
+                operator: NotIn
+                values:
+                - 8gb
+              - key: dbsize
+                operator: NotIn
+                values:
+                - "true"
+              - key: nginx
+                operator: NotIn
+                values:
+                - "true"
+                - "extra-large"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sb-server-service
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: sb-server
+    method: post
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sb-server-read-service
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: sb-server
+    # method: post #testing

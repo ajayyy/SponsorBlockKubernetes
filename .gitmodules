@@ -1,3 +1,6 @@
 [submodule "secrets"]
-	path = secrets
+	path = kubernetes-config/secrets
 	url = https://github.com/ajayyy/kubernetes-secrets
+[submodule "terraform-hcloud-kube-hetzner"]
+	path = terraform-hcloud-kube-hetzner
+	url = https://github.com/ajayyy/terraform-hcloud-kube-hetzner

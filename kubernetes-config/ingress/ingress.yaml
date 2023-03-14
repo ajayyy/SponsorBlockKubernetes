@@ -1,0 +1,238 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sb-site-ingress
+  # annotations:
+  # regex makes it stop using other ingresses
+  #   nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - secretName: sponsor-cert
+  rules:
+    - host: api.sponsor.ajay.app
+      http: &backend
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sb-site-service
+                port:
+                  number: 80
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: sb-server-service
+                port:
+                  number: 8080
+              # service:
+              #   name: sb-site-service
+              #   port:
+              #     number: 80
+          - path: /database
+            pathType: Prefix
+            backend: &dbBackend
+              service:
+                name: db-dumper-service
+                port:
+                  number: 8080
+          - path: /database.json
+            pathType: Prefix
+            backend: *dbBackend
+    - host: "sponsor.ajay.app"
+      http: *backend
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sb-site-ingress-skip-segments
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
+
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      internal;
+      rewrite ^ $original_uri break;
+
+      # proxy_cache static-cache;
+      # proxy_cache_valid 5m;
+      # proxy_cache_lock on;
+      # proxy_cache_use_stale updating;
+      # add_header X-Cache-Status $upstream_cache_status;
+
+      # limit_req zone=segmentLimit burst=50000;
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location /api/skipSegments {
+        if ( $request_method = GET) {
+          set $target_destination '/_read';
+        }
+        if ( $request_method != GET) {
+          set $target_destination '/_write';
+        }
+        set $original_uri $uri;
+        rewrite ^ $target_destination last;
+      }
+spec:
+  ingressClassName: nginx
+  tls:
+    - secretName: sponsor-cert
+  rules:
+    - host: api.sponsor.ajay.app
+      http: &backend
+        paths:
+          - path: /_read
+            pathType: Prefix
+            backend:
+              service:
+                name: sb-server-read-service
+                port:
+                  number: 8080
+              # service:
+              #   name: sb-site-service
+              #   port:
+              #     number: 80
+          - path: /_write
+            pathType: Prefix
+            backend:
+              service:
+                name: sb-server-service
+                port:
+                  number: 8080
+              # service:
+              #   name: sb-site-service
+              #   port:
+              #     number: 80
+    - host: sponsor.ajay.app
+      http: *backend
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sb-site-ingress-cached
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    # nginx.ingress.kubernetes.io/service-upstream: "true" # for 503 handling? maybe not needed
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_cache static-cache;
+      proxy_cache_valid 24h;
+      proxy_cache_lock on;
+      proxy_cache_use_stale updating;
+      add_header X-Cache-Status $upstream_cache_status;
+spec:
+  ingressClassName: nginx
+  tls:
+    - secretName: sponsor-cert
+  rules:
+    - host: api.sponsor.ajay.app
+      http: &backend
+        paths:
+          - path: /api/getTotalStats
+            pathType: Prefix
+            backend: &sb-server
+              service:
+                name: sb-server-service
+                port:
+                  number: 8080
+                # name: sb-site-service
+                # port:
+                #   number: 80
+          - path: /api/getTopUsers
+            pathType: Prefix
+            backend:
+              service:
+                name: sb-server-service
+                port:
+                  number: 8080
+                # name: sb-site-service
+                # port:
+                #   number: 80
+          - path: /api/getTopCategoryUsers
+            pathType: Prefix
+            backend:
+              service:
+                name: sb-server-service
+                port:
+                  number: 8080
+                # name: sb-site-service
+                # port:
+                #   number: 80
+    - host: "sponsor.ajay.app"
+      http: *backend
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: test-sb-server-ingress
+spec:
+  ingressClassName: nginx
+  tls:
+    - secretName: sponsor-cert
+  rules:
+    - host: k8s.sponsor.ajay.app
+      http: &backend
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sb-site-service
+                port:
+                  number: 80
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: test-sb-server-service
+                port:
+                  number: 8080
+              # service:
+              #   name: sb-site-service
+              #   port:
+              #     number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: graph-ingress
+  namespace: monitoring
+spec:
+  ingressClassName: nginx
+  tls:
+    - secretName: graph-cert
+  rules:
+    - host: graph.sponsor.ajay.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: prometheus-operator-grafana
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: longhorn-ingress
+  namespace: longhorn-system
+  annotations:
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: management-auth
+    nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required'
+spec:
+  ingressClassName: nginx
+  tls:
+    - secretName: longhorn-cert
+  rules:
+    - host: longhorn.sponsor.ajay.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: longhorn-frontend
+                port:
+                  number: 80

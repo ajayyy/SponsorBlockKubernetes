@@ -1,8 +1,0 @@
-# apiVersion: stackgres.io/v1
-# kind: SGPostgresConfig
-# metadata:
-#   namespace: main-db
-#   name: pgconfig
-# spec:
-#   postgresVersion: "14"
-#   postgresql.conf:

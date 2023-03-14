@@ -1,0 +1,27 @@
+repositories:
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+
+helmDefaults:
+  wait: true
+  createNamespace: true
+  cleanupOnFail: true
+
+releases:
+- name: prometheus-operator
+  namespace: monitoring
+  chart: prometheus-community/kube-prometheus-stack
+  disableValidation: true
+  set:
+    - name: grafana.image.tag
+      value: "8.5.11"
+    - name: grafana.persistence.enabled
+      value: true
+    - name: grafana.persistence.size
+      value: 10Gi
+    - name: grafana.podDisruptionBudget.minAvailable
+      value: 0
+    - name: grafana.podDisruptionBudget.maxUnavailable
+      value: 0
+    - name: grafana.deploymentStrategy.type
+      value: Recreate

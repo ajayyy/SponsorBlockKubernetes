@@ -1,0 +1,99 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-dumper-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-dumper
+  template:
+    metadata:
+      labels:
+        app: db-dumper
+    spec:
+      containers:
+      - image: ghcr.io/ajayyy/rsync-host@sha256:bbb504e7f7480dd475833c62e54446ccfea2f4ad4c94482503420b6ae523dafa
+        name: db-dumper
+        envFrom:
+          - configMapRef:
+              name: sb-server-config
+        env:
+          - name: postgres_user
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
+          - name: postgres_password
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
+          - name: postgresReadOnly_user
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
+          - name: postgresReadOnly_password
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
+          - name: dumpDatabase_enabled
+            value: "true"
+          - name: dumpDatabase_appExportPath
+            value: "./database-export"
+        ports:
+        - containerPort: 8080
+          name: web-server
+        - containerPort: 873
+          name: rsync-server
+        volumeMounts:
+          - mountPath: "/etc/rsyncd.conf"
+            subPath: "rsyncd.conf"
+            name: config
+        resources:
+          requests:
+            memory: 700Mi
+          limits:
+            memory: 700Mi
+      volumes:
+        - name: config
+          configMap:
+            name: rsync-config
+            items:
+            - key: rsyncd-conf
+              path: rsyncd.conf
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ram
+                operator: NotIn
+                values:
+                - 8gb
+              - key: dbsize
+                operator: NotIn
+                values:
+                - "true"
+              - key: nginx
+                operator: NotIn
+                values:
+                - "true"
+                - "extra-large"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-dumper-service
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: db-dumper
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rsync-service
+spec:
+  type: NodePort
+  ports:
+  - port: 873
+    protocol: TCP
+    targetPort: 873
+    nodePort: 31111
+  selector:
+    app: db-dumper

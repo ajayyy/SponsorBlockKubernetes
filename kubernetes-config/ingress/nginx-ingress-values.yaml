@@ -1,0 +1,153 @@
+controller:
+
+  # Ensure this is up to date with IPs
+  service:
+    externalIPs:
+      - 5.161.68.36
+      - 5.161.120.236
+      - 5.161.121.165
+      - 5.161.146.164
+      - 5.161.149.248
+      - 5.161.83.65
+      - 5.161.156.119
+      - 5.161.60.49
+      - 5.161.84.2
+      - 5.161.156.119
+      - 5.161.138.173
+      - 5.161.153.194
+      - 5.161.156.119
+      - 5.161.84.2
+      - 5.161.47.161
+      - 5.161.80.143
+    externalTrafficPolicy: Local 
+    # Maybe try setting this to cluster before doing an upgrade to not kill single nodes when daemonset restarts
+    # They only restart when the image is updated though
+
+  podLabels:
+    app: nginx-service
+
+  config:
+    disable-access-log: true
+    error-log-level: notice
+    error-log-path: /dev/null
+    access-log-path: /var/log/nginx/custom-access.log # /var/log/nginx/access.log is symlinked to stdout
+    # "$http_referer" "$http_user_agent"  
+    #$remote_user
+    log-format-upstream: '[$time_local]
+      "$request" $status $body_bytes_sent
+      "$gzip_ratio"'
+    http-snippet: |
+      proxy_cache_path /tmp/nginx-cache levels=1:2 keys_zone=static-cache:10m inactive=60m max_size=35g;
+      proxy_cache_key "$scheme$request_method$host$request_uri";
+
+      limit_req_zone global zone=segmentLimit:20m rate=1500r/s;
+    server-snippet: |
+      error_page 502 503 /502.html;
+      error_page 504 /504.html;
+      error_page 429 /429.html;
+
+      location = /502.html {
+        ssi on;
+        internal;
+        return 200 'Bad Gateway: Could not connect to backend';
+      }
+
+      location = /504.html {
+        ssi on;
+        internal;
+        return 200 'Gateway Timeout: Could not connect to backend';
+      }
+
+      location = /409.html {
+        ssi on;
+        internal;
+        return 409 'Ratelimiting';
+      }
+    location-snippet: |
+      if ($request_method = 'OPTIONS') {
+        add_header 'Access-Control-Allow-Origin' '*';
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, DELETE';
+        add_header 'Access-Control-Allow-Headers' 'Content-Type';
+        # cache CORS for 24 hours
+        add_header 'Access-Control-Max-Age' 86400;
+        # return empty response for preflight
+        add_header 'Content-Type' 'text/plain; charset=UTF-8';
+        add_header 'Content-Length' 0;
+        # allow resource timing API
+        add_header 'Timing-Allow-Origin' '*';
+        return 204;
+      }
+    # max-worker-connections: 50000
+    max-worker-connections: 22000
+    # worker-processes: 2
+    forwarded-for-header: "CF-Connecting-IP"
+    # enable-real-ip: true
+    proxy-real-ip-cidr: "173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,1,73.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22,131.0.72.0/22,2400:cb00::/32,2606:4700::/32,2803:f800::/32,2405:b500::/32,2405:8100::/32,2a06:98c0::/29,2c0f:f248::/32"
+    # proxy-real-ip-cidr: "173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/12,172.64.0.0/13,131.0.72.0/22,2400:cb00::/32,2606:4700::/32,2803:f800::/32,2405:b500::/32,2405:8100::/32,2a06:98c0::/29,2c0f:f248::/32"
+    use-forwarded-headers: true
+    limit-req-status-code: 429
+    # upstream-keepalive-connections: 30000
+  
+
+  # required to have a replica on every node
+  # that it might be scheduled on (label some nodes)
+  # since otherwise packets might drop (local traffic policy)
+  # use double to be safe
+  # replicaCount: 12
+  # replicaCount: 10
+
+  kind: DaemonSet
+
+
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: DoNotSchedule
+      labelSelector:
+        matchLabels:
+          app: nginx-service
+  
+  # affinity:
+  # podAntiAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #   - labelSelector:
+  #       matchExpressions:
+  #       - key: app
+  #         operator: In
+  #         values:
+  #         - nginx-service
+  #     topologyKey: kubernetes.io/hostname
+
+  # nodeSelector:
+  #   nginx: "true"
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: nginx
+            operator: In
+            values:
+            - "true"
+            - "extra-large"
+
+  resources:
+    requests:
+      cpu: 1.5
+  
+  sysctls:
+    "net.ipv4.ip_local_port_range": "1024 60999"
+    # "net.core.somaxconn": "65535" # todo: this can be added now that we know how, recreate nodes or edit /etc/rancher/k3s/config.yaml 
+
+  # initContainers:
+  # - command:
+  #   - sh
+  #   - -c
+  #   - sysctl -w net.core.somaxconn=65535;
+  #   securityContext:
+  #     privileged: true
+
+  # forwarded-for-header: "CF-Connecting-IP"
+
+  # Old option
+  # hostNetwork: true
