@@ -1,12 +1,14 @@
 ### Create cluster
 
 ```bash
+cd terraform
 terraform apply -auto-approve
 ```
 
 Destroy:
 
 ```bash
+cd terraform
 terraform destroy -auto-approve
 ```
 
