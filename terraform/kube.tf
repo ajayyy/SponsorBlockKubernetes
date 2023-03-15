@@ -129,7 +129,7 @@ module "kube-hetzner" {
       location    = "ash",
       labels      = [],
       taints      = [],
-      count       = 5
+      count       = 7
     },
     {
       name        = "storage",
@@ -428,7 +428,7 @@ module "kube-hetzner" {
 
   # If you want to disable the automatic use of placement group "spread". See https://docs.hetzner.com/cloud/placement-groups/overview/
   # That may be useful if you need to deploy more than 500 nodes! The default is "false".
-  # placement_group_disable = true
+  placement_group_disable = true
 
   # By default, we allow ICMP ping in to the nodes, to check for liveness for instance. If you do not want to allow that, you can. Just set this flag to true (false by default).
   # block_icmp_ping_in = true

@@ -24,7 +24,7 @@ data:
   # postgres_host: gb
   # postgres_port: "6432"
   postgres_port: "5432"
-  postgres_maxActiveRequests: "2000"
+  postgres_maxActiveRequests: "3000"
   postgresReadOnly_host: sb-db-replicas.second-db
   # postgresReadOnly_host: pgbouncer-repl-service
   # postgresReadOnly_host: cluster3-replica.default.svc
@@ -39,7 +39,7 @@ data:
   # redis_socket_port: "6379"
   redis_socket_port: "32773"
   # redis_maxConnections: "3000"
-  redis_maxConnections: "1000"
+  redis_maxConnections: "2000"
   redis_maxWriteConnections: "500"
   # redis_disableHashCache: "true"
   redis_stopWritingAfterResponseTime: "200"
