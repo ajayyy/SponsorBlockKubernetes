@@ -129,7 +129,7 @@ module "kube-hetzner" {
       location    = "ash",
       labels      = [],
       taints      = [],
-      count       = 8
+      count       = 9
     },
     {
       name        = "storage",
