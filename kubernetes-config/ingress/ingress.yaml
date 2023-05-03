@@ -55,13 +55,13 @@ metadata:
       internal;
       rewrite ^ $original_uri break;
 
-      # proxy_cache static-cache;
-      # proxy_cache_valid 5m;
-      # proxy_cache_lock on;
-      # proxy_cache_use_stale updating;
-      # add_header X-Cache-Status $upstream_cache_status;
+      proxy_cache static-cache;
+      proxy_cache_valid 5m;
+      proxy_cache_lock on;
+      proxy_cache_use_stale updating;
+      add_header X-Cache-Status $upstream_cache_status;
 
-      # limit_req zone=segmentLimit burst=50000;
+      # limit_req zone=segmentLimit burst=1000;
     nginx.ingress.kubernetes.io/server-snippet: |
       location /api/skipSegments {
         if ( $request_method = GET) {
@@ -103,6 +103,39 @@ spec:
               #   name: sb-site-service
               #   port:
               #     number: 80
+    - host: sponsor.ajay.app
+      http: *backend
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sb-site-ingress-video-labels
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
+
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_cache static-cache;
+      proxy_cache_valid 15m;
+      proxy_cache_lock on;
+      proxy_cache_use_stale updating;
+      add_header X-Cache-Status $upstream_cache_status;
+
+      # limit_req zone=segmentLimit burst=1000;
+spec:
+  ingressClassName: nginx
+  tls:
+    - secretName: sponsor-cert
+  rules:
+    - host: api.sponsor.ajay.app
+      http: &backend
+        paths:
+          - path: /api/videoLabels
+            pathType: Prefix
+            backend:
+              service:
+                name: sb-server-read-service
+                port:
+                  number: 8080
     - host: sponsor.ajay.app
       http: *backend
 ---
@@ -159,37 +192,37 @@ spec:
                 #   number: 80
     - host: "sponsor.ajay.app"
       http: *backend
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: test-sb-server-ingress
-spec:
-  ingressClassName: nginx
-  tls:
-    - secretName: sponsor-cert
-  rules:
-    - host: k8s.sponsor.ajay.app
-      http: &backend
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: sb-site-service
-                port:
-                  number: 80
-          - path: /api
-            pathType: Prefix
-            backend:
-              service:
-                name: test-sb-server-service
-                port:
-                  number: 8080
-              # service:
-              #   name: sb-site-service
-              #   port:
-              #     number: 80
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: test-sb-server-ingress
+# spec:
+#   ingressClassName: nginx
+#   tls:
+#     - secretName: sponsor-cert
+#   rules:
+#     - host: k8s.sponsor.ajay.app
+#       http: &backend
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: sb-site-service
+#                 port:
+#                   number: 80
+#           - path: /api
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: test-sb-server-service
+#                 port:
+#                   number: 8080
+#               # service:
+#               #   name: sb-site-service
+#               #   port:
+#               #     number: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
