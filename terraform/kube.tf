@@ -121,7 +121,7 @@ module "kube-hetzner" {
         "nginx=extra-large"
       ],
       taints = [],
-      count  = 2 #2
+      count  = 0 #2
     },
     {
       name        = "agent-31-2",
@@ -129,7 +129,7 @@ module "kube-hetzner" {
       location    = "ash",
       labels      = [],
       taints      = [],
-      count       = 9
+      count       = 0
     },
     {
       name        = "storage",
@@ -166,6 +166,52 @@ module "kube-hetzner" {
       ],
       floating_ip = true
       count       = 0
+    },
+    {
+      name        = "agent-31-3",
+      server_type = "cpx31",
+      location    = "ash",
+      labels      = [],
+      taints      = [],
+      count       = 11
+    },
+    {
+      name        = "agent-41-nginx-3",
+      server_type = "cpx41",
+      location    = "ash",
+      labels = [
+        "nginx=extra-large"
+      ],
+      taints = [],
+      count  = 0 #2
+    },
+    {
+      name        = "agent-41-nginx-4",
+      server_type = "cpx41",
+      location    = "ash",
+      labels = [
+        "nginx=extra-large"
+      ],
+      taints = [],
+      count  = 0 #2
+    },
+    {
+      name        = "agent-41-test",
+      server_type = "cpx41",
+      location    = "ash",
+      labels = [],
+      taints = [],
+      count  = 0
+    },
+    {
+      name        = "agent-51-nginx",
+      server_type = "cpx51",
+      location    = "ash",
+      labels = [
+        "nginx=extra-large"
+      ],
+      taints = [],
+      count  = 3 #2
     }
   ]
   # Add custom control plane configuration options here.

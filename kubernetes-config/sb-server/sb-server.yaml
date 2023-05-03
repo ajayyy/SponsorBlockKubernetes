@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: sb-server-deployment
 spec:
-  replicas: 28
+  replicas: 32
   selector:
     matchLabels:
       app: sb-server
@@ -15,7 +15,7 @@ spec:
         method: post
     spec:
       containers:
-      - image: ghcr.io/ajayyy/sb-server@sha256:66a354bb331e875eaf384b63078e04e251407ea664ca5f26143bc9e659be0dc5
+      - image: ghcr.io/ajayyy/sb-server@sha256:34117e29f7539b3648fff7393628b89df8f9c2e4bf4bc5732753fc1f2289fe9a
         name: sb-server
         resources:
           requests:

@@ -13,7 +13,7 @@ data:
   # postgresReadOnly_weight: "0"
   # postgresReadOnly_readTimeout: "200"
   # postgresReadOnly_readTimeout: "2000"
-  postgresReadOnly_readTimeout: "1000"
+  postgresReadOnly_readTimeout: "200000"
   postgresReadOnly_max: "45"
   postgresReadOnly_maxTries: "2"
   postgresReadOnly_fallbackOnFail: "true"
@@ -39,7 +39,7 @@ data:
   # redis_socket_port: "6379"
   redis_socket_port: "32773"
   # redis_maxConnections: "3000"
-  redis_maxConnections: "3000"
+  redis_maxConnections: "10000"
   redis_maxWriteConnections: "1000"
   # redis_disableHashCache: "true"
   redis_stopWritingAfterResponseTime: "500"
@@ -47,6 +47,7 @@ data:
   # redis_maxConnections: "30000000"
   # redis_getTimeout: "400" # Default 40\
   redis_getTimeout: "20000" # Default 40\
+  redis_responseTimePause: "0"
   redisRateLimit: "false"
   redisRead_enabled: "false"
   redisRead_socket_host: redis-service
