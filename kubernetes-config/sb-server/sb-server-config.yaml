@@ -5,7 +5,7 @@ metadata:
 data:
   postgres_enabled: "true"
   # postgres_max: "45"
-  postgres_max: "10"
+  postgres_max: "60"
   postgres_maxTries: "2"
   postgresReadOnly_enabled: "false"
   postgresReadOnly_weight: "2"
@@ -18,12 +18,14 @@ data:
   postgresReadOnly_maxTries: "2"
   postgresReadOnly_fallbackOnFail: "true"
   # postgresReadOnly_maxConcurrentRequests: "30"
-  postgres_host: "10.2.0.1"
+  # postgres_host: "10.2.0.1"
+  postgres_host: "pgbouncer-main-service"
+  # postgres_host: "pgcat-service"
   # postgres_host: "5.161.49.113"
   # postgres_host: pgbouncer-main-service
   # postgres_host: gb
-  # postgres_port: "6432"
-  postgres_port: "5432"
+  postgres_port: "6432"
+  # postgres_port: "5432"
   postgres_maxActiveRequests: "3000"
   postgresReadOnly_host: sb-db-replicas.second-db
   # postgresReadOnly_host: pgbouncer-repl-service
