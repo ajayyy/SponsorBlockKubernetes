@@ -43,6 +43,7 @@ spec:
             name: config
         resources:
           requests:
+            cpu: 700m
             memory: 700Mi
           limits:
             memory: 700Mi

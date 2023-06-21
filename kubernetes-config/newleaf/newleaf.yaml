@@ -18,6 +18,7 @@ spec:
         name: newleaf
         resources:
           requests:
+            cpu: 700m
             memory: 150Mi
           limits:
             memory: 150Mi

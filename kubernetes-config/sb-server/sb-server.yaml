@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: sb-server-deployment
 spec:
-  replicas: 30 # 31
+  replicas: 30
   selector:
     matchLabels:
       app: sb-server
@@ -20,7 +20,7 @@ spec:
         resources:
           requests:
             # cpu: 1300m # Old limit to not make it overload memory
-            cpu: 900m
+            cpu: 700m
             memory: 1500Mi
           limits:
             memory: 1500Mi
