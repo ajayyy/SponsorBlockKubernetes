@@ -25,3 +25,7 @@ releases:
       value: 0
     - name: grafana.deploymentStrategy.type
       value: Recreate
+    - name: prometheus.prometheusSpec.resources.requests.cpu
+      value: 500m
+    - name: prometheus.prometheusSpec.resources.requests.memory
+      value: 3500Mi

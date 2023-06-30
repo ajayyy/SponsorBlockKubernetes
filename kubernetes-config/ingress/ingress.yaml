@@ -56,7 +56,7 @@ metadata:
       rewrite ^ $original_uri break;
 
       proxy_cache static-cache;
-      proxy_cache_valid 5m;
+      proxy_cache_valid 1m;
       proxy_cache_lock on;
       proxy_cache_use_stale updating;
       add_header X-Cache-Status $upstream_cache_status;
@@ -160,6 +160,13 @@ spec:
     - host: api.sponsor.ajay.app
       http: &backend
         paths:
+          - path: /api/brandingStats
+            pathType: Prefix
+            backend: &sb-server
+              service:
+                name: sb-server-service
+                port:
+                  number: 8080
           - path: /api/getTotalStats
             pathType: Prefix
             backend: &sb-server
@@ -174,22 +181,22 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: sb-server-service
-                port:
-                  number: 8080
-                # name: sb-site-service
+                # name: sb-server-service
                 # port:
-                #   number: 80
+                #   number: 8080
+                name: sb-site-service
+                port:
+                  number: 80
           - path: /api/getTopCategoryUsers
             pathType: Prefix
             backend:
               service:
-                name: sb-server-service
-                port:
-                  number: 8080
-                # name: sb-site-service
+                # name: sb-server-service
                 # port:
-                #   number: 80
+                #   number: 8080
+                name: sb-site-service
+                port:
+                  number: 80
     - host: "sponsor.ajay.app"
       http: *backend
 # ---

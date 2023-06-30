@@ -26,6 +26,9 @@ controller:
       - 5.161.196.166
       - 5.161.83.43
       - 5.161.91.52
+      - 5.161.97.16
+      - 5.161.228.147
+      - 5.161.89.115
     externalTrafficPolicy: Local 
     # Maybe try setting this to cluster before doing an upgrade to not kill single nodes when daemonset restarts
     # They only restart when the image is updated though

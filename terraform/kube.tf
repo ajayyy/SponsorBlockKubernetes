@@ -173,7 +173,7 @@ module "kube-hetzner" {
       location    = "ash",
       labels      = [],
       taints      = [],
-      count       = 8
+      count       = 9
     },
     {
       name        = "agent-41-nginx-3",
