@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: sb-server-deployment
 spec:
-  replicas: 35
+  replicas: 48 #42 #54
   selector:
     matchLabels:
       app: sb-server
@@ -15,15 +15,15 @@ spec:
         method: post
     spec:
       containers:
-      - image: ghcr.io/ajayyy/sb-server@sha256:ffccd97ca60b99072d8622eb4dfd2eaac2aed772eb9bdae0b90dcf89cd32f7ab
+      - image: ghcr.io/ajayyy/sb-server@sha256:8d691797adb9456137c8647f291f4cdaa70bd31981cf1c25579efe99d2f6036a
         name: sb-server
         resources:
           requests:
             # cpu: 1300m # Old limit to not make it overload memory
-            cpu: 700m
-            memory: 1500Mi
+            cpu: 600m
+            memory: 750Mi
           limits:
-            memory: 1500Mi
+            memory: 750Mi # 750
         envFrom:
           - configMapRef:
               name: sb-server-config
@@ -68,6 +68,12 @@ spec:
                 name: sb-server-secrets
                 key: discordFirstTimeSubmissionsWebhookURL
                 optional: false
+          - name: discordDeArrowLockedWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordDeArrowLockedWebhookURL
+                optional: false
           - name: patreon_clientId
             valueFrom:
               secretKeyRef:
@@ -79,6 +85,12 @@ spec:
               secretKeyRef:
                 name: sb-server-secrets
                 key: patreon_clientSecret
+                optional: false
+          - name: tokenSeed
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: tokenSeed
                 optional: false
         ports:
         - containerPort: 8080
@@ -195,28 +207,119 @@ spec:
                 - "true"
                 - "extra-large"
 ---
-apiVersion: v1
-kind: Service
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: sb-server-service
+  name: sb-server-deployment-test
 spec:
-  ports:
-  - port: 8080
-    protocol: TCP
-    targetPort: 8080
+  replicas: 0 #35
   selector:
-    app: sb-server
-    method: post
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: sb-server-read-service
-spec:
-  ports:
-  - port: 8080
-    protocol: TCP
-    targetPort: 8080
-  selector:
-    app: sb-server
-    # method: post #testing
+    matchLabels:
+      app: sb-server
+      method: post
+  template:
+    metadata:
+      labels:
+        app: sb-server
+        method: post
+    spec:
+      containers:
+      - image: ghcr.io/ajayyy/sb-server@sha256:75e4855ae313ffd977a12fa8d5dde08b60959cc91aa78e47a2630147399cffe6
+        name: sb-server
+        resources:
+          requests:
+            # cpu: 1300m # Old limit to not make it overload memory
+            cpu: 700m
+            memory: 1500Mi
+          limits:
+            memory: 1500Mi
+        envFrom:
+          - configMapRef:
+              name: sb-server-config
+        env:
+          - name: postgres_port
+            value: "5432"
+          # - name: postgres_max
+          #   value: "45"
+          - name: postgres_user
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
+          - name: postgres_password
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
+          - name: postgresReadOnly_user
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
+          - name: postgresReadOnly_password
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
+          # - name: postgres_user
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+          # - name: postgres_password
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+          # - name: postgresReadOnly_user
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+          # - name: postgresReadOnly_password
+          #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+          - name: globalSalt
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: globalSalt
+                optional: false
+          - name: discordReportChannelWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordReportChannelWebhookURL
+                optional: false
+          - name: discordFailedReportChannelWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordFailedReportChannelWebhookURL
+                optional: false
+          - name: discordFirstTimeSubmissionsWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordFirstTimeSubmissionsWebhookURL
+                optional: false
+          - name: patreon_clientId
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: patreon_clientId
+                optional: false
+          - name: patreon_clientSecret
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: patreon_clientSecret
+                optional: false
+          - name: tokenSeed
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: tokenSeed
+                optional: false
+        ports:
+        - containerPort: 8080
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ram
+                operator: NotIn
+                values:
+                - 8gb
+              - key: dbsize
+                operator: NotIn
+                values:
+                - "true"
+              - key: nginx
+                operator: NotIn
+                values:
+                - "true"
+                - "extra-large"
+      securityContext:
+        sysctls:
+        - name: net.core.somaxconn
+          value: "65535"

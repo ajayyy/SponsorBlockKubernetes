@@ -19,30 +19,40 @@ spec:
         name: pgbouncer
         ports:
         - containerPort: 6432
+          hostPort: 9343 # forces it to only run once per node
+        resources:
+          requests:
+            cpu: 400m # todo: not applied 700m
         envFrom:
           - configMapRef:
               name: pgbouncer-config
         env:
           - name: POSTGRESQL_HOST
-            value: 10.0.0.2
+            value: 10.2.0.1
+          - name: POSTGRESQL_PORT
+            value: "5432"
+          - name: POSTGRES_USER
+            valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
           - name: POSTGRESQL_PASSWORD
             valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
-      topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: topology.kubernetes.io/zone
-          whenUnsatisfiable: ScheduleAnyway
-          labelSelector:
-            matchLabels:
-              app: pgbouncer
-      # affinity:
-      #   nodeAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #       nodeSelectorTerms:
-      #       - matchExpressions:
-      #         - key: dbsize
-      #           operator: In
-      #           values:
-      #           - "true"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ram
+                operator: NotIn
+                values:
+                - 8gb
+              - key: dbsize
+                operator: NotIn
+                values:
+                - "true"
+              - key: nginx
+                operator: In # Always in nginx now
+                values:
+                - "true"
+                - "extra-large"
 ---
 apiVersion: v1
 kind: Service

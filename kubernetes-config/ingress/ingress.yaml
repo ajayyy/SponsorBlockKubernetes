@@ -167,6 +167,13 @@ spec:
                 name: sb-server-service
                 port:
                   number: 8080
+          - path: /api/getTopBrandingUsers
+            pathType: Prefix
+            backend: &sb-server
+              service:
+                name: sb-server-service
+                port:
+                  number: 8080
           - path: /api/getTotalStats
             pathType: Prefix
             backend: &sb-server
@@ -181,22 +188,22 @@ spec:
             pathType: Prefix
             backend:
               service:
-                # name: sb-server-service
-                # port:
-                #   number: 8080
-                name: sb-site-service
+                name: sb-server-service
                 port:
-                  number: 80
+                  number: 8080
+                # name: sb-site-service
+                # port:
+                #   number: 80
           - path: /api/getTopCategoryUsers
             pathType: Prefix
             backend:
               service:
-                # name: sb-server-service
-                # port:
-                #   number: 8080
-                name: sb-site-service
+                name: sb-server-service
                 port:
-                  number: 80
+                  number: 8080
+                # name: sb-site-service
+                # port:
+                #   number: 80
     - host: "sponsor.ajay.app"
       http: *backend
 # ---
