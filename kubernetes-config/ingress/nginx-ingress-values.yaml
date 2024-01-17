@@ -1,5 +1,7 @@
 controller:
 
+  allowSnippetAnnotations: true
+
   # Ensure this is up to date with IPs
   service:
     externalIPs:
