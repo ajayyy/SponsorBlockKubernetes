@@ -37,7 +37,7 @@ spec:
                 values:
                 - "true"
               - key: nginx
-                operator: NotIn
+                operator: In
                 values:
                 - "true"
                 - "extra-large"
