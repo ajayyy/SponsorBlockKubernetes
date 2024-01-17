@@ -24,11 +24,33 @@ helm upgrade --install ingress-nginx ingress-nginx \
 
 ### Install redis
 
-```bash
-helm upgrade --install redis-cluster bitnami/redis -f kubernetes-config/redis/redis-values.yaml
+Docker compose file
+
+```yaml
+version: '3.8'
+services:
+  dragonfly:
+    container_name: dragonfly
+    image: 'docker.dragonflydb.io/dragonflydb/dragonfly'
+    ulimits:
+      memlock: -1
+    #ports:
+    #  - "6379:6379"
+    # For better performance, consider `host` mode instead `port` to avoid docker NAT.
+    # `host` mode is NOT currently supported in Swarm Mode.
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#network_mode
+    network_mode: "host"
+    entrypoint: dragonfly --cache_mode=true --port=32773
+    restart: always
+    volumes:
+      - ./dragonflydata:/data
 ```
 
-To update, you may need to restart it with `kubectl rollout restart statefulset redis-cluster-master`
+To setup regulation, connect use:
+
+```bash
+dragonfly --cache_mode=true --port=32773 --replicaof=10.2.0.2:32773
+```
 
 ### Setup postgres
 

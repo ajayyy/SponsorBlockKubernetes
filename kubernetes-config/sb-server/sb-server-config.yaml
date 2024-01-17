@@ -36,7 +36,7 @@ data:
   postgresReadOnly_port: "5432"
   # postgresReadOnly_stopRetryThreshold: "800"
   redis_enabled: "true"
-  redis_socket_host: "10.3.0.1"
+  redis_socket_host: "10.2.0.2"
   # redis_socket_host: "5.161.115.40"
   # redis_socket_host: keydb-service
   # redis_socket_host: redis-cluster-master
@@ -53,9 +53,9 @@ data:
   redis_getTimeout: "20000" # Default 40\
   redis_responseTimePause: "0"
   redisRateLimit: "false"
-  redisRead_enabled: "false"
-  redisRead_socket_host: redis-service
-  redisRead_socket_port: "6379"
+  redisRead_enabled: "true"
+  redisRead_socket_host: "10.1.0.1"
+  redisRead_socket_port: "32773"
   mode: production
   # mode: development
   userCounterURL: "http://user-counter-service:8080"
