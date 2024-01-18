@@ -40,7 +40,7 @@ services:
     # `host` mode is NOT currently supported in Swarm Mode.
     # https://docs.docker.com/compose/compose-file/compose-file-v3/#network_mode
     network_mode: "host"
-    entrypoint: dragonfly --cache_mode=true --port=32773
+    entrypoint: dragonfly --cache_mode=true --port=32773 --snapshot_cron "* * * * *"
     restart: always
     volumes:
       - ./dragonflydata:/data
