@@ -46,7 +46,7 @@ services:
       - ./dragonflydata:/data
 ```
 
-To setup regulation, connect use:
+To setup replication, connect use:
 
 ```bash
 dragonfly --cache_mode=true --port=32773 --replicaof=10.2.0.2:32773
