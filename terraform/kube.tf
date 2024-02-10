@@ -48,11 +48,11 @@ module "kube-hetzner" {
   # If you want to use an ssh key that is already registered within hetzner cloud, you can pass its id.
   # If no id is passed, a new ssh key will be registered within hetzner cloud.
   # It is important that exactly this key is passed via `ssh_public_key` & `ssh_private_key` vars.
-  # hcloud_ssh_key_id = ""
+  hcloud_ssh_key_id = "sb"
 
   # These can be customized, or left with the default values
   # * For Hetzner locations see https://docs.hetzner.com/general/others/data-centers-and-connection/
-  network_region = "us-east" # change to `us-east` if location is ash
+  network_region = "eu-central" # change to `us-east` if location is ash
 
   # If you must change the network CIDR you can do so below, but it is highly advised against.
   # network_ipv4_cidr = "10.0.0.0/8"
@@ -87,136 +87,28 @@ module "kube-hetzner" {
 
   control_plane_nodepools = [
     {
-      name        = "control-plane-21-2",
-      server_type = "cpx21",
-      location    = "ash",
+      name        = "control-plane-11-2",
+      server_type = "cax11",
+      location    = "fsn1",
       labels      = [],
       taints      = [],
       count       = 3
-    },
-    {
-      name        = "control-plane-31-2",
-      server_type = "cpx31",
-      location    = "ash",
-      labels      = [],
-      taints      = [],
-      count       = 0
-    },
-    {
-      name        = "control-plane-41-2",
-      server_type = "cpx41",
-      location    = "ash",
-      labels      = [],
-      taints      = [],
-      count       = 0
     }
   ]
 
   agent_nodepools = [
     {
-      name        = "agent-41-nginx-2",
-      server_type = "cpx41",
-      location    = "ash",
-      labels = [
-        "nginx=extra-large"
-      ],
-      taints = [],
-      count  = 0 #2
-    },
-    {
-      name        = "agent-31-2",
-      server_type = "cpx31",
-      location    = "ash",
+      name        = "agent-21",
+      server_type = "cax21",
+      location    = "fsn1",
       labels      = [],
       taints      = [],
-      count       = 0
+      count       = 12 #15 #19
     },
     {
-      name        = "storage",
-      server_type = "cpx21",
-      location    = "ash",
-      # Fully optional, just a demo.
-      labels = [
-        "node.kubernetes.io/server-usage=storage"
-      ],
-      taints = [],
-      count  = 0
-
-      # In the case of using Longhorn, you can use Hetzner volumes instead of using the node's own storage by specifying a value from 10 to 10000 (in GB)
-      # It will create one volume per node in the nodepool, and configure Longhorn to use them.
-      # Something worth noting is that Volume storage is slower than node storage, which is achieved by not mentioning longhorn_volume_size or setting it to 0.
-      # So for something like DBs, you definitely want node storage, for other things like backups, volume storage is fine, and cheaper.
-      # longhorn_volume_size = 20
-
-      # Enable automatic backups via Hetzner (default: false)
-      # backups = true
-    },
-    # Egress nodepool useful to route egress traffic using Hetzner Floating IPs (https://docs.hetzner.com/cloud/floating-ips)
-    # used with Cilium's Egress Gateway feature https://docs.cilium.io/en/stable/gettingstarted/egress-gateway/
-    # See the https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner#examples for an example use case.
-    {
-      name        = "egress",
-      server_type = "cpx11",
-      location    = "ash",
-      labels = [
-        "node.kubernetes.io/role=egress"
-      ],
-      taints = [
-        "node.kubernetes.io/role=egress:NoSchedule"
-      ],
-      floating_ip = true
-      count       = 0
-    },
-    {
-      name        = "agent-31-3",
-      server_type = "cpx31",
-      location    = "ash",
-      labels      = [],
-      taints      = [],
-      count       = 9
-    },
-    {
-      name        = "agent-41-nginx-3",
-      server_type = "cpx41",
-      location    = "ash",
-      labels = [
-        "nginx=extra-large"
-      ],
-      taints = [],
-      count  = 0 #2
-    },
-    {
-      name        = "agent-41-nginx-4",
-      server_type = "cpx41",
-      location    = "ash",
-      labels = [
-        "nginx=extra-large"
-      ],
-      taints = [],
-      count  = 0 #2
-    },
-    {
-      name        = "agent-41-test",
-      server_type = "cpx41",
-      location    = "ash",
-      labels = [],
-      taints = [],
-      count  = 0
-    },
-    {
-      name        = "agent-51-nginx",
-      server_type = "cpx51",
-      location    = "ash",
-      labels = [
-        "nginx=extra-large"
-      ],
-      taints = [],
-      count  = 0 #2
-    },
-    {
-      name        = "agent-51-nginx-2",
-      server_type = "cpx51",
-      location    = "ash",
+      name        = "agent-41-nginx",
+      server_type = "cax41",
+      location    = "fsn1",
       labels = [
         "nginx=extra-large"
       ],
@@ -374,7 +266,7 @@ module "kube-hetzner" {
   # initial_k3s_channel = "stable"
 
   # The cluster name, by default "k3s"
-  cluster_name = "sb"
+  cluster_name = "sb2"
 
   # Whether to use the cluster name in the node name, in the form of {cluster_name}-{nodepool_name}, the default is "true".
   # use_cluster_name_in_node_name = false

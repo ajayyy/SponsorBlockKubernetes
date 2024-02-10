@@ -14,7 +14,7 @@ spec:
         app: db-dumper
     spec:
       containers:
-      - image: ghcr.io/ajayyy/rsync-host@sha256:47e29645a37da8de651c99641fd3648fe9d5ed2dfb5a518eb7af1fb68ac02bd3
+      - image: ghcr.io/ajayyy/rsync-host@sha256:3f513207720546157032dded0f8c89a836515fb71bec3494564452145a8cc26d
         name: db-dumper
         envFrom:
           - configMapRef:
@@ -41,12 +41,12 @@ spec:
           - mountPath: "/etc/rsyncd.conf"
             subPath: "rsyncd.conf"
             name: config
-        resources:
-          requests:
-            cpu: 700m
-            memory: 700Mi
-          limits:
-            memory: 700Mi
+        # resources:
+        #   requests:
+        #     cpu: 700m
+        #     memory: 700Mi
+        #   limits:
+        #     memory: 700Mi
       volumes:
         - name: config
           configMap:

@@ -9,6 +9,7 @@ data:
   # postgresPrivateMax: "3000"
   postgresPrivateMax: "60"
   postgres_maxTries: "2"
+  postgres_redisTimeoutThreshold: "1000"
   postgresReadOnly_enabled: "false"
   postgresReadOnly_weight: "2"
   # postgresReadOnly_weight: "300"
@@ -20,7 +21,7 @@ data:
   postgresReadOnly_maxTries: "2"
   postgresReadOnly_fallbackOnFail: "true"
   # postgresReadOnly_maxConcurrentRequests: "30"
-  postgres_host: "10.2.0.1"
+  postgres_host: "10.1.0.2"
   # postgres_host: "pgbouncer-main-service"
   # postgres_host: "pgcat-service"
   # postgres_host: "5.161.49.113"
@@ -36,7 +37,7 @@ data:
   postgresReadOnly_port: "5432"
   # postgresReadOnly_stopRetryThreshold: "800"
   redis_enabled: "true"
-  redis_socket_host: "10.2.0.2"
+  redis_socket_host: "10.1.0.1"
   # redis_socket_host: "5.161.115.40"
   # redis_socket_host: keydb-service
   # redis_socket_host: redis-cluster-master
@@ -44,21 +45,32 @@ data:
   redis_socket_port: "32773"
   # redis_maxConnections: "3000"
   redis_maxConnections: "5000"
-  redis_maxWriteConnections: "2000"
+  #redis_clientCacheSize: "300000000"
+  redis_clientCacheSize: "250000000" # If resetting cache, lower to prevent crashes
+  redis_useCompression: "true"
+  redis_dragonflyMode: "true"
+  # useCacheForSegmentGroups: "true"
+  # redis_maxConnections: "2000"
+  # redis_maxWriteConnections: "2000"
+  # redis_maxWriteConnections: "100"
+  redis_maxWriteConnections: "3000"
   # redis_disableHashCache: "true"
-  redis_stopWritingAfterResponseTime: "500"
+  # redis_stopWritingAfterResponseTime: "300"
+  redis_stopWritingAfterResponseTime: "1000000"
   redis_commandsQueueMaxLength: "30000000000"
   # redis_maxConnections: "30000000"
-  # redis_getTimeout: "400" # Default 40\
+  # redis_getTimeout: "1000" # Default 40\
   redis_getTimeout: "20000" # Default 40\
   redis_responseTimePause: "0"
   redisRateLimit: "false"
-  redisRead_enabled: "true"
-  redisRead_socket_host: "10.1.0.1"
+  redisRead_enabled: "false"
+  redisRead_socket_host: "10.1.0.2"
   redisRead_socket_port: "32773"
+  redisRead_weight: "1"
   mode: production
   # mode: development
   userCounterURL: "http://user-counter-service:8080"
+  # userCounterRatio: "50"
   newLeafURLs: "http://newleaf-service:3000"
   adminUserID: 7b89ea26f77bda8176e655eee86029f28c1e6514b6d6e3450bce362b5b126ca3
   diskCacheURL: "http://disk-cache-service:8080"

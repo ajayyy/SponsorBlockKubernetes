@@ -5,3 +5,4 @@ terraform.tfstate.backup
 .terraform.lock.hcl
 env.sh
 sb_kubeconfig.yaml
+sb2_kubeconfig.yaml

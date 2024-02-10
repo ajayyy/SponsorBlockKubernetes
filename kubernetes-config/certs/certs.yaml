@@ -24,7 +24,6 @@ metadata:
   name: sponsor-cert
 spec:
   dnsNames:
-    - k8s.sponsor.ajay.app
     - sponsor.ajay.app
     - api.sponsor.ajay.app
   secretName: sponsor-cert
@@ -32,28 +31,28 @@ spec:
     name: zerossl
     kind: ClusterIssuer
 ---
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: graph-cert
-  namespace: monitoring
-spec:
-  dnsNames:
-    - graph.sponsor.ajay.app
-  secretName: graph-cert
-  issuerRef:
-    name: zerossl
-    kind: ClusterIssuer
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: longhorn-cert
-  namespace: longhorn-system
-spec:
-  dnsNames:
-    - longhorn.sponsor.ajay.app
-  secretName: longhorn-cert
-  issuerRef:
-    name: zerossl
-    kind: ClusterIssuer
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: graph-cert
+#   namespace: monitoring
+# spec:
+#   dnsNames:
+#     - graph.sponsor.ajay.app
+#   secretName: graph-cert
+#   issuerRef:
+#     name: zerossl
+#     kind: ClusterIssuer
+# ---
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: longhorn-cert
+#   namespace: longhorn-system
+# spec:
+#   dnsNames:
+#     - longhorn.sponsor.ajay.app
+#   secretName: longhorn-cert
+#   issuerRef:
+#     name: zerossl
+#     kind: ClusterIssuer

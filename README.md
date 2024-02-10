@@ -2,14 +2,14 @@
 
 ```bash
 cd terraform
-terraform apply -auto-approve
+terraform apply
 ```
 
 Destroy:
 
 ```bash
 cd terraform
-terraform destroy -auto-approve
+terraform destroy
 ```
 
 
