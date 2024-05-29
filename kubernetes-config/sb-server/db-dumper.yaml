@@ -14,7 +14,7 @@ spec:
         app: db-dumper
     spec:
       containers:
-      - image: ghcr.io/ajayyy/rsync-host@sha256:3f513207720546157032dded0f8c89a836515fb71bec3494564452145a8cc26d
+      - image: ghcr.io/ajayyy/rsync-host@sha256:6662e19998a9eba64bc8db9cab5679ba46a04483bb3c8e3be3e1ef40d0c9f3ff
         name: db-dumper
         envFrom:
           - configMapRef:
@@ -41,12 +41,12 @@ spec:
           - mountPath: "/etc/rsyncd.conf"
             subPath: "rsyncd.conf"
             name: config
-        # resources:
-        #   requests:
-        #     cpu: 700m
-        #     memory: 700Mi
-        #   limits:
-        #     memory: 700Mi
+        resources:
+          requests:
+            cpu: 2400m
+            memory: 2000Mi
+          # limits:
+          #   memory: 700Mi
       volumes:
         - name: config
           configMap:
@@ -98,3 +98,13 @@ spec:
     nodePort: 31111
   selector:
     app: db-dumper
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: db-dumper-pdb
+spec:
+  minAvailable: 0
+  selector:
+    matchLabels:
+      app: db-dumper
