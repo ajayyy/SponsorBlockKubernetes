@@ -5,10 +5,12 @@ controller:
   # Ensure this is up to date with IPs
   service:
     externalIPs:
-      - 128.140.82.161
-      - 138.201.154.103
-      - 49.13.122.86
+      - 167.235.193.86
+      - 49.13.125.48
+      - 49.12.72.21
+      - 128.140.123.101
     externalTrafficPolicy: Local 
+    # externalTrafficPolicy: Cluster 
     # Maybe try setting this to cluster before doing an upgrade to not kill single nodes when daemonset restarts
     # They only restart when the image is updated though
 
@@ -25,8 +27,9 @@ controller:
     log-format-upstream: '[$time_local]
       "$request" $status $body_bytes_sent
       "$gzip_ratio"'
+      # 10080m = 1 week
     http-snippet: |
-      proxy_cache_path /tmp/nginx-cache levels=1:2 keys_zone=static-cache:10m inactive=60m max_size=35g;
+      proxy_cache_path /var/tmp/nginx-cache levels=1:2 keys_zone=static-cache:100m inactive=60m max_size=35g;
       proxy_cache_key "$scheme$request_method$host$request_uri";
 
       limit_req_zone global zone=segmentLimit:20m rate=1500r/s;
@@ -73,7 +76,7 @@ controller:
       }
     max-worker-connections: 50000
     # max-worker-connections: 22000
-    # worker-processes: 2
+    worker-processes: 16
     forwarded-for-header: "CF-Connecting-IP"
     # enable-real-ip: true
     proxy-real-ip-cidr: "173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,1,73.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22,131.0.72.0/22,2400:cb00::/32,2606:4700::/32,2803:f800::/32,2405:b500::/32,2405:8100::/32,2a06:98c0::/29,2c0f:f248::/32"
@@ -132,6 +135,32 @@ controller:
   sysctls:
     "net.ipv4.ip_local_port_range": "1024 60999"
     "net.core.somaxconn": "65535"
+
+  terminationGracePeriodSeconds: 1
+
+  livenessProbe:
+    httpGet:
+      # should match container.healthCheckPath
+      path: "/healthz"
+      port: 10254
+      scheme: HTTP
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 4
+    successThreshold: 1
+    # Making it same as readiness to kill right away
+    failureThreshold: 3
+  readinessProbe:
+    httpGet:
+      # should match container.healthCheckPath
+      path: "/healthz"
+      port: 10254
+      scheme: HTTP
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 4
+    successThreshold: 1
+    failureThreshold: 3
 
   # initContainers:
   # - command:

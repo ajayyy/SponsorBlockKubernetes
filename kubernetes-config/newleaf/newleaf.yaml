@@ -1,68 +1,69 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: newleaf-deployment
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: newleaf
-  template:
-    metadata:
-      labels:
-        app: newleaf
-      name: newleaf
-    spec:
-      containers:
-      - image: abeltramo/newleaf:latest
-        name: newleaf
-        resources:
-          requests:
-            cpu: 700m
-            memory: 150Mi
-          limits:
-            memory: 150Mi
-        ports:
-        - containerPort: 3000
-          hostPort: 3000 # forces it to only run once per node
-        volumeMounts:
-          - mountPath: "/workdir/configuration.py"
-            subPath: "configuration.py"
-            name: config
-      volumes:
-        - name: config
-          configMap:
-            name: newleaf-config
-            items:
-            - key: newleaf-config
-              path: configuration.py
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: ram
-                operator: NotIn
-                values:
-                - 8gb
-              - key: dbsize
-                operator: NotIn
-                values:
-                - "true"
-              - key: nginx
-                operator: NotIn
-                values:
-                - "true"
-                - "extra-large"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: newleaf-service
-spec:
-  ports:
-  - port: 3000
-    protocol: TCP
-    targetPort: 3000
-  selector:
-    app: newleaf
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: newleaf-deployment
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: newleaf
+#   template:
+#     metadata:
+#       labels:
+#         app: newleaf
+#       name: newleaf
+#     spec:
+#       containers:
+#       - image: abeltramo/newleaf:latest
+#         name: newleaf
+#         resources:
+#           requests:
+#             # cpu: 700m
+#             cpu: 1200m # take up two slots of sb-server
+#             memory: 150Mi
+#           limits:
+#             memory: 150Mi
+#         ports:
+#         - containerPort: 3000
+#           hostPort: 3000 # forces it to only run once per node
+#         volumeMounts:
+#           - mountPath: "/workdir/configuration.py"
+#             subPath: "configuration.py"
+#             name: config
+#       volumes:
+#         - name: config
+#           configMap:
+#             name: newleaf-config
+#             items:
+#             - key: newleaf-config
+#               path: configuration.py
+#       affinity:
+#         nodeAffinity:
+#           requiredDuringSchedulingIgnoredDuringExecution:
+#             nodeSelectorTerms:
+#             - matchExpressions:
+#               - key: ram
+#                 operator: NotIn
+#                 values:
+#                 - 8gb
+#               - key: dbsize
+#                 operator: NotIn
+#                 values:
+#                 - "true"
+#               - key: nginx
+#                 operator: NotIn
+#                 values:
+#                 - "true"
+#                 - "extra-large"
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: newleaf-service
+# spec:
+#   ports:
+#   - port: 3000
+#     protocol: TCP
+#     targetPort: 3000
+#   selector:
+#     app: newleaf

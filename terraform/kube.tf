@@ -34,10 +34,10 @@ module "kube-hetzner" {
   # ssh_port = 2222
 
   # * Your ssh public key
-  ssh_public_key = file("/home/ajay/.ssh/sponsorblock-k8s-2.pub")
+  ssh_public_key = file("/home/ajay/.ssh/certs/sponsorblock-k8s-2.pub")
   # * Your private key must be "ssh_private_key = null" when you want to use ssh-agent for a Yubikey-like device authentification or an SSH key-pair with a passphrase.
   # For more details on SSH see https://github.com/kube-hetzner/kube-hetzner/blob/master/docs/ssh.md
-  ssh_private_key = file("/home/ajay/.ssh/sponsorblock-k8s-2")
+  ssh_private_key = file("/home/ajay/.ssh/certs/sponsorblock-k8s-2")
   # You can add additional SSH public Keys to grant other team members root access to your cluster nodes.
   # ssh_additional_public_keys = []
 
@@ -48,7 +48,7 @@ module "kube-hetzner" {
   # If you want to use an ssh key that is already registered within hetzner cloud, you can pass its id.
   # If no id is passed, a new ssh key will be registered within hetzner cloud.
   # It is important that exactly this key is passed via `ssh_public_key` & `ssh_private_key` vars.
-  hcloud_ssh_key_id = "sb"
+  # hcloud_ssh_key_id = "sb"
 
   # These can be customized, or left with the default values
   # * For Hetzner locations see https://docs.hetzner.com/general/others/data-centers-and-connection/
@@ -103,7 +103,7 @@ module "kube-hetzner" {
       location    = "fsn1",
       labels      = [],
       taints      = [],
-      count       = 12 #15 #19
+      count       = 19 #16
     },
     {
       name        = "agent-41-nginx",
@@ -113,7 +113,17 @@ module "kube-hetzner" {
         "nginx=extra-large"
       ],
       taints = [],
-      count  = 3
+      count  = 4
+    },
+    {
+      name        = "agent-31-db-dumper",
+      server_type = "cax31",
+      location    = "fsn1",
+      labels = [
+        "dump=true"
+      ],
+      taints = [],
+      count  = 1
     }
   ]
   # Add custom control plane configuration options here.
@@ -170,7 +180,7 @@ module "kube-hetzner" {
 
   # To use local storage on the nodes, you can enable Longhorn, default is "false".
   # See a full recap on how to configure agent nodepools for longhorn here https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner/discussions/373#discussioncomment-3983159
-  enable_longhorn = true
+  enable_longhorn = false
 
   # By default, longhorn is pulled from https://charts.longhorn.io.
   # If you need a version of longhorn which assures compatibility with rancher you can set this variable to https://charts.rancher.io. 

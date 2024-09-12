@@ -52,16 +52,38 @@ metadata:
     nginx.ingress.kubernetes.io/upstream-hash-by: $segment_param
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
 
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "2"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "2"
+
+    nginx.ingress.kubernetes.io/default-backend: error-service
+    nginx.ingress.kubernetes.io/custom-http-errors: "503,504"
+
     nginx.ingress.kubernetes.io/configuration-snippet: |
       internal;
       rewrite ^ $original_uri break;
 
       proxy_cache static-cache;
-      # proxy_cache_valid 15m;
-      # proxy_cache_valid 1m;
+      # proxy_cache_valid 200 15m;
+      # proxy_cache_valid 404 1s;
+      # proxy_cache_valid 200 404 1m;
+      # proxy_cache_valid 200 404 5m;
+      proxy_cache_valid 200 404 1s;
+
+      # When enabled, only one request at a time will be allowed to populate a new cache element identified
       proxy_cache_lock on;
-      proxy_cache_use_stale updating;
-      add_header X-Cache-Status $upstream_cache_status;
+      # proxy_cache_lock off;
+
+      proxy_cache_revalidate on;
+
+      # Will use cache instead
+      proxy_next_upstream off;
+      proxy_cache_use_stale updating error timeout http_500 http_502 http_503 http_504;
+
+      # proxy_connect_timeout 2s;
+      # proxy_read_timeout 2s;
+      
+      add_header X-Cache-Status $upstream_cache_status always;
+      # add_header X-Real-Cache-Status $upstream_cache_status;
 
       # limit_req zone=segmentLimit burst=1;
     nginx.ingress.kubernetes.io/server-snippet: |
@@ -91,7 +113,7 @@ spec:
                 port:
                   number: 8080
               # service:
-              #   name: sb-site-service
+              #   name: error-service
               #   port:
               #     number: 80
           - path: /_write
@@ -102,7 +124,7 @@ spec:
                 port:
                   number: 8080
               # service:
-              #   name: sb-site-service
+              #   name: error-service
               #   port:
               #     number: 80
     - host: sponsor.ajay.app
@@ -116,13 +138,35 @@ metadata:
     nginx.ingress.kubernetes.io/upstream-hash-by: $segment_param
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
 
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "2"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "2"
+
+    nginx.ingress.kubernetes.io/default-backend: error-service
+    nginx.ingress.kubernetes.io/custom-http-errors: "503,504"
+
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_cache static-cache;
       # proxy_cache_valid 15m;
-      # proxy_cache_valid 30s;
+      # proxy_cache_valid 200 15m;
+      # proxy_cache_valid 404 1m;
+      # proxy_cache_valid 200 404 1m;
+      # proxy_cache_valid 200 404 5m;
+      proxy_cache_valid 200 404 1s;
+
+      # When enabled, only one request at a time will be allowed to populate a new cache element identified
       proxy_cache_lock on;
-      proxy_cache_use_stale updating;
-      add_header X-Cache-Status $upstream_cache_status;
+      # proxy_cache_lock off;
+
+      proxy_cache_revalidate on;
+
+      # Will use cache instead
+      proxy_next_upstream off;
+      proxy_cache_use_stale updating error timeout http_500 http_502 http_503 http_504;
+
+      # proxy_connect_timeout 2s;
+      # proxy_read_timeout 2s;
+
+      add_header X-Cache-Status $upstream_cache_status always;
 
       # limit_req zone=segmentLimit burst=1000;
 spec:
@@ -150,6 +194,8 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/upstream-hash-by: $segment_param
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
+
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3s"
 
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_cache static-cache;
@@ -325,3 +371,66 @@ spec:
 #                 name: longhorn-frontend
 #                 port:
 #                   number: 80
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: sb-site-ingress-skip-segments-test
+#   annotations:
+#     # nginx.ingress.kubernetes.io/upstream-hash-by: $segment_param
+#     nginx.ingress.kubernetes.io/proxy-buffering: "on"
+
+#     nginx.ingress.kubernetes.io/proxy-connect-timeout: "2"
+#     nginx.ingress.kubernetes.io/proxy-read-timeout: "2"
+
+#     nginx.ingress.kubernetes.io/default-backend: error-service
+#     nginx.ingress.kubernetes.io/custom-http-errors: "503,504"
+
+#     nginx.ingress.kubernetes.io/configuration-snippet: |
+#       proxy_cache static-cache;
+#       # proxy_cache_valid 15m;
+#       # proxy_cache_valid 200 15m;
+#       # proxy_cache_valid 404 1m;
+#       # proxy_cache_valid 200 404 1m;
+#       # proxy_cache_valid 200 404 5m;
+#       proxy_cache_valid 200 404 1s;
+
+#       # When enabled, only one request at a time will be allowed to populate a new cache element identified
+#       proxy_cache_lock on;
+#       # proxy_cache_lock off;
+
+#       proxy_cache_revalidate on;
+
+#       # Will use cache instead
+#       proxy_next_upstream off;
+#       proxy_cache_use_stale updating error timeout http_500 http_502 http_503 http_504;
+
+#       # proxy_connect_timeout 2s;
+#       # proxy_read_timeout 2s;
+
+#       add_header X-Cache-Status $upstream_cache_status always;
+
+#       # limit_req zone=segmentLimit burst=1000;
+#     # nginx.ingress.kubernetes.io/server-snippet: |
+#     #   location /notapi/test {
+#     #     if ( $request_method = GET) {
+#     #       set $target_destination '/_read_test';
+#     #     }
+#     #     set $original_uri $uri;
+#     #     rewrite ^ $target_destination last;
+#     #   }
+# spec:
+#   ingressClassName: nginx
+#   tls:
+#     - secretName: test-cert
+#   rules:
+#     - host: k8s.sponsor.ajay.app
+#       http: &backend
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: sb-server-test-service
+#                 port:
+#                   number: 8080

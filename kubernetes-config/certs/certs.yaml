@@ -31,6 +31,18 @@ spec:
     name: zerossl
     kind: ClusterIssuer
 ---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: test-cert
+spec:
+  dnsNames:
+    - k8s.sponsor.ajay.app
+  secretName: test-cert
+  issuerRef:
+    name: zerossl
+    kind: ClusterIssuer
+---
 # apiVersion: cert-manager.io/v1
 # kind: Certificate
 # metadata:

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: sb-server-deployment
 spec:
-  replicas: 60 #77 #60 #54 #48 #42 #54
+  replicas: 100 #80 #60 #43 #50 #55 #77 #60 #54 #48 #42 #54
   selector:
     matchLabels:
       app: sb-server
@@ -15,16 +15,18 @@ spec:
         method: post
     spec:
       containers:
-      - image: ghcr.io/ajayyy/sb-server@sha256:dde66b698a270c069edbaa265e6b767045aba7b04f9593c85e567bf7af98fb28
+      - image: ghcr.io/ajayyy/sb-server@sha256:16b1dfb3c8783c891d5024eb050211a76276f5f730195dd7eb6e4ecc777dd4b7
         name: sb-server
         resources:
           requests:
             # cpu: 1300m # Old limit to not make it overload memory
-            cpu: 600m
+            cpu: 600m # 5 per node
+            # cpu: 750m # 4 per node
+            # cpu: 1000m # 3 per node
             memory: 750Mi
           limits:
             #memory: 750Mi # 750
-            memory: 1000Mi
+            memory: 1300Mi
         envFrom:
           - configMapRef:
               name: sb-server-config
@@ -95,6 +97,21 @@ spec:
                 optional: false
         ports:
         - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /api/status
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 1
+          timeoutSeconds: 10
+          failureThreshold: 6
+        # readinessProbe:
+        #   httpGet:
+        #     path: /api/ready
+        #     port: 8080
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 2
+        #   periodSeconds: 1
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -113,6 +130,19 @@ spec:
                 values:
                 - "true"
                 - "extra-large"
+              - key: dump
+                operator: NotIn
+                values:
+                - "true"
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+             matchExpressions:
+             - key: app
+               operator: In
+               values:
+               - db-dumper
+            topologyKey: kubernetes.io/hostname
       # securityContext:
       #   sysctls:
       #   - name: net.core.somaxconn
@@ -141,3 +171,153 @@ spec:
     targetPort: 8080
   selector:
     app: sb-server
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: sb-server-test-deployment
+# spec:
+#   replicas: 1 #77 #60 #54 #48 #42 #54
+#   selector:
+#     matchLabels:
+#       app: sb-server-test
+#       method: post
+#   template:
+#     metadata:
+#       labels:
+#         app: sb-server-test
+#         method: post
+#     spec:
+#       containers:
+#       - image: ghcr.io/ajayyy/sb-server@sha256:16b1dfb3c8783c891d5024eb050211a76276f5f730195dd7eb6e4ecc777dd4b7
+#         name: sb-server-test
+#         resources:
+#           requests:
+#             # cpu: 1300m # Old limit to not make it overload memory
+#             cpu: 600m
+#             memory: 750Mi
+#           limits:
+#             #memory: 750Mi # 750
+#             memory: 1100Mi
+#         envFrom:
+#           - configMapRef:
+#               name: sb-server-config
+#         env:
+#           - name: postgres_user
+#             valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
+#           - name: postgres_password
+#             valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
+#           - name: postgresReadOnly_user
+#             valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
+#           - name: postgresReadOnly_password
+#             valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
+#           - name: redis_enabled
+#             value: "false"
+#           - name: postgres_port
+#             value: "5435"
+#           # - name: postgres_user
+#           #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+#           # - name: postgres_password
+#           #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+#           # - name: postgresReadOnly_user
+#           #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
+#           # - name: postgresReadOnly_password
+#           #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: password } }
+#           - name: globalSalt
+#             valueFrom:
+#               secretKeyRef:
+#                 name: sb-server-secrets
+#                 key: globalSalt
+#                 optional: false
+#           - name: discordReportChannelWebhookURL
+#             valueFrom:
+#               secretKeyRef:
+#                 name: sb-server-secrets
+#                 key: discordReportChannelWebhookURL
+#                 optional: false
+#           - name: discordFailedReportChannelWebhookURL
+#             valueFrom:
+#               secretKeyRef:
+#                 name: sb-server-secrets
+#                 key: discordFailedReportChannelWebhookURL
+#                 optional: false
+#           - name: discordFirstTimeSubmissionsWebhookURL
+#             valueFrom:
+#               secretKeyRef:
+#                 name: sb-server-secrets
+#                 key: discordFirstTimeSubmissionsWebhookURL
+#                 optional: false
+#           - name: discordDeArrowLockedWebhookURL
+#             valueFrom:
+#               secretKeyRef:
+#                 name: sb-server-secrets
+#                 key: discordDeArrowLockedWebhookURL
+#                 optional: false
+#           - name: patreon_clientId
+#             valueFrom:
+#               secretKeyRef:
+#                 name: sb-server-secrets
+#                 key: patreon_clientId
+#                 optional: false
+#           - name: patreon_clientSecret
+#             valueFrom:
+#               secretKeyRef:
+#                 name: sb-server-secrets
+#                 key: patreon_clientSecret
+#                 optional: false
+#           - name: tokenSeed
+#             valueFrom:
+#               secretKeyRef:
+#                 name: sb-server-secrets
+#                 key: tokenSeed
+#                 optional: false
+#         ports:
+#         - containerPort: 8080
+#         # livenessProbe:
+#         #   httpGet:
+#         #     path: /api/status
+#         #     port: 8080
+#         #   initialDelaySeconds: 10
+#         #   periodSeconds: 1
+#         #   timeoutSeconds: 2
+#         #   failureThreshold: 1
+#         # readinessProbe:
+#         #   httpGet:
+#         #     path: /api/status
+#         #     port: 8080
+#         #   initialDelaySeconds: 5
+#         #   periodSeconds: 1
+#       affinity:
+#         nodeAffinity:
+#           requiredDuringSchedulingIgnoredDuringExecution:
+#             nodeSelectorTerms:
+#             - matchExpressions:
+#               - key: ram
+#                 operator: NotIn
+#                 values:
+#                 - 8gb
+#               - key: dbsize
+#                 operator: NotIn
+#                 values:
+#                 - "true"
+#               - key: nginx
+#                 operator: NotIn
+#                 values:
+#                 - "true"
+#                 - "extra-large"
+#       # securityContext:
+#       #   sysctls:
+#       #   - name: net.core.somaxconn
+#       #     value: "65535"
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: sb-server-test-service
+# spec:
+#   ports:
+#   - port: 8080
+#     protocol: TCP
+#     targetPort: 8080
+#   selector:
+#     app: sb-server-test

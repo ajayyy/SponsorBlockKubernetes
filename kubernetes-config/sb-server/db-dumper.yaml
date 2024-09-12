@@ -72,6 +72,10 @@ spec:
                 values:
                 - "true"
                 - "extra-large"
+              - key: dump
+                operator: In
+                values:
+                - "true"
 ---
 apiVersion: v1
 kind: Service

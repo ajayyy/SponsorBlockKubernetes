@@ -1,27 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: disk-cache-deployment
+  name: error-server-deployment
 spec:
-  replicas: 1
+  replicas: 15
   selector:
     matchLabels:
-      app: disk-cache
+      app: error-server
   template:
     metadata:
       labels:
-        app: disk-cache
+        app: error-server
+      name: error-server
     spec:
       containers:
-      - image: ghcr.io/ajayyy/disk-cache:latest
-        name: disk-cache
+      - image: ghcr.io/ajayyy/error-server:latest
+        name: error-server
         ports:
-        - containerPort: 8080
-        resources:
-          requests:
-            memory: 300Mi
-          limits:
-            memory: 300Mi
+        - containerPort: 80
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -36,23 +32,19 @@ spec:
                 values:
                 - "true"
               - key: nginx
-                operator: NotIn
+                operator: In
                 values:
                 - "true"
                 - "extra-large"
-              - key: dump
-                operator: NotIn
-                values:
-                - "true"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: disk-cache-service
+  name: error-service
 spec:
   ports:
-  - port: 8080
+  - port: 80
     protocol: TCP
-    targetPort: 8080
+    targetPort: 80
   selector:
-    app: disk-cache
+    app: error-server

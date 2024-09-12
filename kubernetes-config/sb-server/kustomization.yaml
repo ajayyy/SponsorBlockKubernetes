@@ -6,3 +6,4 @@ resources:
 - rsync-config.yaml
 - sb-server-config.yaml
 - sb-server.yaml
+- error-server.yaml
