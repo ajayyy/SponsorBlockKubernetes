@@ -12,9 +12,19 @@ releases:
   namespace: monitoring
   chart: prometheus-community/kube-prometheus-stack
   disableValidation: true
+  values:
+    - prometheus:
+        prometheusSpec:
+          storageSpec:
+            volumeClaimTemplate:
+              spec:
+                accessModes: ["ReadWriteOnce"]
+                resources:
+                  requests:
+                    storage: 50Gi
   set:
     - name: grafana.image.tag
-      value: "8.5.11"
+      value: "11.2.1"
     - name: grafana.persistence.enabled
       value: true
     - name: grafana.persistence.size
@@ -27,5 +37,11 @@ releases:
       value: Recreate
     - name: prometheus.prometheusSpec.resources.requests.cpu
       value: 500m
+    - name: prometheus.prometheusSpec.retention
+      value: "90d"
+    - name: prometheus.prometheusSpec.scrapeInterval
+      value: "30s"
+    - name: prometheus.prometheusSpec.evaluationInterval
+      value: "30s"
     - name: prometheus.prometheusSpec.resources.requests.memory
       value: 3500Mi

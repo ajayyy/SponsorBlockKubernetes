@@ -325,27 +325,27 @@ spec:
 #               #   name: sb-site-service
 #               #   port:
 #               #     number: 80
-# ---
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: graph-ingress
-#   namespace: monitoring
-# spec:
-#   ingressClassName: nginx
-#   tls:
-#     - secretName: graph-cert
-#   rules:
-#     - host: graph.sponsor.ajay.app
-#       http:
-#         paths:
-#           - path: /
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: prometheus-operator-grafana
-#                 port:
-#                   number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: graph-ingress
+  namespace: monitoring
+spec:
+  ingressClassName: nginx
+  tls:
+    - secretName: graph-cert
+  rules:
+    - host: graph.sponsor.ajay.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: prometheus-operator-grafana
+                port:
+                  number: 80
 # ---
 # apiVersion: networking.k8s.io/v1
 # kind: Ingress
@@ -393,7 +393,7 @@ spec:
 #       # proxy_cache_valid 404 1m;
 #       # proxy_cache_valid 200 404 1m;
 #       # proxy_cache_valid 200 404 5m;
-#       proxy_cache_valid 200 404 1s;
+#       # proxy_cache_valid 200 404 1s;
 
 #       # When enabled, only one request at a time will be allowed to populate a new cache element identified
 #       proxy_cache_lock on;

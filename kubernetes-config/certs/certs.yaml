@@ -43,18 +43,18 @@ spec:
     name: zerossl
     kind: ClusterIssuer
 ---
-# apiVersion: cert-manager.io/v1
-# kind: Certificate
-# metadata:
-#   name: graph-cert
-#   namespace: monitoring
-# spec:
-#   dnsNames:
-#     - graph.sponsor.ajay.app
-#   secretName: graph-cert
-#   issuerRef:
-#     name: zerossl
-#     kind: ClusterIssuer
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: graph-cert
+  namespace: monitoring
+spec:
+  dnsNames:
+    - graph.sponsor.ajay.app
+  secretName: graph-cert
+  issuerRef:
+    name: zerossl
+    kind: ClusterIssuer
 # ---
 # apiVersion: cert-manager.io/v1
 # kind: Certificate
