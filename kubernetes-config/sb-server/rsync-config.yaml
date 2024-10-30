@@ -11,10 +11,21 @@ data:
 
     [sponsorblock]
     use chroot = no
-    max connections = 200
+    max connections = 50
     # path to mirrored files
     path = /usr/src/app/database-export
     comment = sponsorblock-database
+    read only = true
+    refuse options = c delete zl
+    # disallow checksumming and compression level to reduce CPU/IO load
+    # disallow deleting files clientside
+
+    [supersecretpriorityfolder]
+    use chroot = no
+    max connections = 10
+    # path to mirrored files
+    path = /usr/src/app/database-export
+    comment = sponsorblock-database-priority
     read only = true
     refuse options = c delete zl
     # disallow checksumming and compression level to reduce CPU/IO load
