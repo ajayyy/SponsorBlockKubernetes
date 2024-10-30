@@ -9,7 +9,8 @@ data:
   # postgresPrivateMax: "3000"
   postgresPrivateMax: "60"
   postgres_maxTries: "2"
-  postgres_redisTimeoutThreshold: "1000"
+  # postgres_redisTimeoutThreshold: "1000"
+  postgres_redisTimeoutThreshold: "0"
   postgresReadOnly_enabled: "false"
   postgresReadOnly_weight: "2"
   maxConnections: "2000"
@@ -51,6 +52,7 @@ data:
   # redis_maxConnections: "3000"
   # redis_maxConnections: "5000"
   redis_maxConnections: "10000"
+  redis_maxReadResponseTime: "500"
   #redis_clientCacheSize: "300000000"
   # redis_clientCacheSize: "200000000" # If resetting cache, lower to prevent crashes
   redis_clientCacheSize: "160000000"

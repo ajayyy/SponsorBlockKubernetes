@@ -15,7 +15,7 @@ spec:
         method: post
     spec:
       containers:
-      - image: ghcr.io/ajayyy/sb-server@sha256:16b1dfb3c8783c891d5024eb050211a76276f5f730195dd7eb6e4ecc777dd4b7
+      - image: ghcr.io/ajayyy/sb-server@sha256:bcfa8c1186321a67d06a1244c172b739822523d475a217d9c643131850d16f3c
         name: sb-server
         resources:
           requests:
@@ -76,6 +76,12 @@ spec:
               secretKeyRef:
                 name: sb-server-secrets
                 key: discordDeArrowLockedWebhookURL
+                optional: false
+          - name: discordDeArrowWarnedWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordDeArrowWarnedWebhookURL
                 optional: false
           - name: patreon_clientId
             valueFrom:
@@ -164,13 +170,31 @@ apiVersion: v1
 kind: Service
 metadata:
   name: sb-server-segments-service
+  labels:
+    app: sb-server
 spec:
   ports:
   - port: 8080
     protocol: TCP
     targetPort: 8080
+    name: web
   selector:
     app: sb-server
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: sb-server-servicemonitor
+  labels:
+    app: sb-server
+    release: prometheus-operator
+spec:
+  endpoints:
+  - port: web
+    interval: 1m
+  selector:
+    matchLabels:
+      app: sb-server
 # ---
 # apiVersion: apps/v1
 # kind: Deployment
@@ -189,8 +213,10 @@ spec:
 #         method: post
 #     spec:
 #       containers:
-#       - image: ghcr.io/ajayyy/sb-server@sha256:16b1dfb3c8783c891d5024eb050211a76276f5f730195dd7eb6e4ecc777dd4b7
+#       - image: ghcr.io/ajayyy/sb-server@sha256:7df3de00f91aece1e6199bdffff28b60ff2efc62c7810744feb26a1c20917f14
 #         name: sb-server-test
+#         command: ["/bin/sh"]
+#         args: ["-c", "cd /usr/src/app; echo '{}' > config.json;node --inspect dist/src/index.js"]
 #         resources:
 #           requests:
 #             # cpu: 1300m # Old limit to not make it overload memory
@@ -211,10 +237,14 @@ spec:
 #             valueFrom: { secretKeyRef: { name: stackgres-secrets, key: username } }
 #           - name: postgresReadOnly_password
 #             valueFrom: { secretKeyRef: { name: stackgres-secrets, key: password } }
-#           - name: redis_enabled
-#             value: "false"
-#           - name: postgres_port
-#             value: "5435"
+#           - name: redis_clientCacheSize
+#             value: "0"
+#           # - name: redis_disableHashCache
+#           #   value: "true"
+#           # - name: redis_enabled
+#           #   value: "false"
+#           # - name: postgres_port
+#           #   value: "5435"
 #           # - name: postgres_user
 #           #   valueFrom: { secretKeyRef: { name: cluster3-postgres-secret, key: username } }
 #           # - name: postgres_password
