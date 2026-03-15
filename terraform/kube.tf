@@ -93,6 +93,14 @@ module "kube-hetzner" {
       labels      = [],
       taints      = [],
       count       = 3
+    },
+    {
+      name        = "control-plane-11-3",
+      server_type = "cax11",
+      location    = "fsn1",
+      labels      = [],
+      taints      = [],
+      count       = 0
     }
   ]
 
