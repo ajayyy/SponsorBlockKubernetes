@@ -111,7 +111,7 @@ module "kube-hetzner" {
       location    = "fsn1",
       labels      = [],
       taints      = [],
-      count       = 19 #16
+      count       = 17 #19 #16
     },
     {
       name        = "agent-41-nginx",
