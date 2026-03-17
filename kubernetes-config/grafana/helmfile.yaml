@@ -38,7 +38,7 @@ releases:
     - name: prometheus.prometheusSpec.resources.requests.cpu
       value: 500m
     - name: prometheus.prometheusSpec.retention
-      value: "90d"
+      value: "10d"
     - name: prometheus.prometheusSpec.scrapeInterval
       value: "30s"
     - name: prometheus.prometheusSpec.evaluationInterval

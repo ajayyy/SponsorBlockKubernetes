@@ -53,7 +53,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
 
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "2"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "8"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "15"
 
     nginx.ingress.kubernetes.io/default-backend: error-service
     nginx.ingress.kubernetes.io/custom-http-errors: "503,504"
@@ -66,8 +66,8 @@ metadata:
       # proxy_cache_valid 200 15m;
       # proxy_cache_valid 404 1s;
       # proxy_cache_valid 200 404 1m;
-      # proxy_cache_valid 200 404 5m;
-      proxy_cache_valid 200 404 1s;
+      proxy_cache_valid 200 404 5m;
+      # proxy_cache_valid 200 404 1s;
 
       # When enabled, only one request at a time will be allowed to populate a new cache element identified
       proxy_cache_lock on;
@@ -139,7 +139,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-buffering: "on"
 
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "2"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "8"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "15"
 
     nginx.ingress.kubernetes.io/default-backend: error-service
     nginx.ingress.kubernetes.io/custom-http-errors: "503,504"
@@ -259,9 +259,12 @@ spec:
             pathType: Prefix
             backend: &sb-server
               service:
-                name: sb-server-service
+                # name: sb-server-service
+                # port:
+                #   number: 8080
+                name: sb-site-service
                 port:
-                  number: 8080
+                  number: 80
           - path: /api/getTotalStats
             pathType: Prefix
             backend: &sb-server

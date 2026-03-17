@@ -84,6 +84,7 @@ controller:
     use-forwarded-headers: true
     limit-req-status-code: 429
     # upstream-keepalive-connections: 30000
+    annotations-risk-level: critical
   
 
   # required to have a replica on every node

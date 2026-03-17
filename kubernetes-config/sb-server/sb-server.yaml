@@ -15,7 +15,7 @@ spec:
         method: post
     spec:
       containers:
-      - image: ghcr.io/ajayyy/sb-server@sha256:bcfa8c1186321a67d06a1244c172b739822523d475a217d9c643131850d16f3c
+      - image: ghcr.io/ajayyy/sb-server@sha256:516d7fa1766e2aa3b13d2251b90f002c71dde9497987dfe2693c9faf31896e18
         name: sb-server
         resources:
           requests:
@@ -82,6 +82,30 @@ spec:
               secretKeyRef:
                 name: sb-server-secrets
                 key: discordDeArrowWarnedWebhookURL
+                optional: false
+          - name: discordNewUserWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordNewUserWebhookURL
+                optional: false
+          - name: discordRejectedNewUserWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordRejectedNewUserWebhookURL
+                optional: false
+          - name: discordAutobanWebhookURL
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: discordAutobanWebhookURL
+                optional: false
+          - name: requestValidatorRules
+            valueFrom:
+              secretKeyRef:
+                name: sb-server-secrets
+                key: requestValidatorRules
                 optional: false
           - name: patreon_clientId
             valueFrom:

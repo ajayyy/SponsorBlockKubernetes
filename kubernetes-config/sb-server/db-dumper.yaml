@@ -14,7 +14,7 @@ spec:
         app: db-dumper
     spec:
       containers:
-      - image: ghcr.io/ajayyy/rsync-host@sha256:6662e19998a9eba64bc8db9cab5679ba46a04483bb3c8e3be3e1ef40d0c9f3ff
+      - image: ghcr.io/ajayyy/rsync-host@sha256:ebbe738030ca145d61330f59917be4da2893bc92a388c60163219f67dcdf2920
         name: db-dumper
         envFrom:
           - configMapRef:
