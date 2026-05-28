@@ -22,6 +22,61 @@ releases:
                 resources:
                   requests:
                     storage: 50Gi
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: nginx
+                    operator: NotIn
+                    values:
+                    - "true"
+                    - "extra-large"
+    - prometheusOperator:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: nginx
+                  operator: NotIn
+                  values:
+                  - "true"
+                  - "extra-large"
+    - prometheus-node-exporter:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: nginx
+                  operator: NotIn
+                  values:
+                  - "true"
+                  - "extra-large"
+    - grafana:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: nginx
+                  operator: NotIn
+                  values:
+                  - "true"
+                  - "extra-large"
+    - alertmanager:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: nginx
+                  operator: NotIn
+                  values:
+                  - "true"
+                  - "extra-large"
+
   set:
     - name: grafana.image.tag
       value: "11.2.1"
@@ -44,4 +99,7 @@ releases:
     - name: prometheus.prometheusSpec.evaluationInterval
       value: "30s"
     - name: prometheus.prometheusSpec.resources.requests.memory
+      value: 3500Mi
+      # todo: how to do an array in this format
+    - name: prometheus.prometheusSpec.resources.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms
       value: 3500Mi
